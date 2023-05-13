@@ -6,6 +6,8 @@ protocol TrackerCollectionViewCellDelegate: AnyObject {
 
 final class TrackerCollectionViewCell: UICollectionViewCell {
     
+    static let reuseIdentifier = "TrackerCollectionViewCell"
+    
     weak var delegate: TrackerCollectionViewCellDelegate?
     
     private var days: [String] = ["дней", "день", "дня"]
@@ -14,18 +16,15 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     private lazy var colorView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 16
-        view.backgroundColor = .darkGray
         return view
     }()
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        label.font = Font.medium12
         label.textColor = .white
         label.numberOfLines = 2
         label.lineBreakMode = .byWordWrapping
-        label.text = "Кошка заслонила камеру на созвоне"
-        label.addInterlineSpacing(spacingValue: 18 - label.font.lineHeight)
         return label
     }()
     
@@ -34,35 +33,30 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         label.layer.masksToBounds = true
         label.layer.cornerRadius = 12
         label.backgroundColor = .white.withAlphaComponent(0.3)
-        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.text = "❤️"
+        label.font = Font.medium12
         label.textAlignment = .center
         return label
     }()
     
     private lazy var quantityButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .darkGray
         button.layer.cornerRadius = 17
-        button.setImage(UIImage(systemName: "plus"), for: .normal)
-//        button.setImage(UIImage(systemName: "xmark")?.withRenderingMode(.alwaysTemplate), for: .disabled)
         button.setPreferredSymbolConfiguration((.init(pointSize: 12)), forImageIn: .normal)
         button.tintColor = .white
+        button.addTarget(self, action: #selector(quantityButtonTapped), for: .touchUpInside)
         return button
     }()
     
     private lazy var quantityLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .black
-        label.text = "\(quantity) \(days[0])"
+        label.font = Font.medium12
+        label.textColor = Color.black
         return label
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
-        switchDay()
     }
     
     required init?(coder: NSCoder) {
@@ -71,89 +65,66 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     private func setupView() {
         contentView.backgroundColor = .clear
-        setupTrackerBackgroundView()
-        setupEmojiLabel()
-        setupTextLabel()
-        setupQuantityButton()
-        setupQuantityLabel()
+        
+        [colorView, emojiLabel, nameLabel, quantityButton, quantityLabel].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        [colorView, quantityButton, quantityLabel].forEach {
+            contentView.addSubview($0)
+        }
+        
+        [emojiLabel, nameLabel].forEach {
+            colorView.addSubview($0)
+        }
+        
+        setConstraints()
     }
     
-    private func setupTrackerBackgroundView() {
-        colorView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(colorView)
-        
+    private func setConstraints() {
         NSLayoutConstraint.activate([
+            // colorView
             colorView.topAnchor.constraint(equalTo: contentView.topAnchor),
             colorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             colorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            colorView.heightAnchor.constraint(equalToConstant: 90)
-        ])
-    }
-    
-    private func setupEmojiLabel() {
-        emojiLabel.translatesAutoresizingMaskIntoConstraints = false
-        colorView.addSubview(emojiLabel)
-        
-        NSLayoutConstraint.activate([
+            colorView.heightAnchor.constraint(equalToConstant: 90),
+            
+            // emojiLabel
             emojiLabel.topAnchor.constraint(equalTo: colorView.topAnchor, constant: 12),
             emojiLabel.leadingAnchor.constraint(equalTo: colorView.leadingAnchor, constant: 12),
             emojiLabel.heightAnchor.constraint(equalToConstant: 24),
-            emojiLabel.widthAnchor.constraint(equalToConstant: 24)
-        ])
-    }
-    
-    private func setupTextLabel() {
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        colorView.addSubview(nameLabel)
-        
-        NSLayoutConstraint.activate([
+            emojiLabel.widthAnchor.constraint(equalToConstant: 24),
+            
+            // nameLabel
             nameLabel.bottomAnchor.constraint(equalTo: colorView.bottomAnchor, constant: -12),
             nameLabel.leadingAnchor.constraint(equalTo: colorView.leadingAnchor, constant: 12),
-            nameLabel.trailingAnchor.constraint(equalTo: colorView.trailingAnchor, constant: -12)
-        ])
-    }
-    
-    private func setupQuantityButton() {
-        quantityButton.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(quantityButton)
-        
-        NSLayoutConstraint.activate([
+            nameLabel.trailingAnchor.constraint(equalTo: colorView.trailingAnchor, constant: -12),
+            
+            // quantityButton
             quantityButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             quantityButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
             quantityButton.heightAnchor.constraint(equalToConstant: 34),
-            quantityButton.widthAnchor.constraint(equalToConstant: 34)
-        ])
-        
-        quantityButton.addTarget(self, action: #selector(checkMark), for: .touchUpInside)
-    }
-    
-    private func setupQuantityLabel() {
-        quantityLabel.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(quantityLabel)
-        
-        NSLayoutConstraint.activate([
+            quantityButton.widthAnchor.constraint(equalToConstant: 34),
+            
+            //
             quantityLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             quantityLabel.trailingAnchor.constraint(equalTo: quantityButton.leadingAnchor, constant: -8),
-            quantityLabel.centerYAnchor.constraint(equalTo: quantityButton.centerYAnchor)
+            quantityLabel.centerYAnchor.constraint(equalTo: quantityButton.centerYAnchor),
         ])
     }
     
     @objc
-    private func checkMark() {
+    private func quantityButtonTapped() {
         switch quantityButton.currentImage {
-        case UIImage(systemName: "plus"):
-//            quantityButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
-//            quantityButton.alpha = 0.3
-            doneCheck(true)
+        case Image.plus:
+            trackerIsCompleted(true)
             quantity += 1
-            switchDay()
+            setQuantityLabelText()
             delegate?.record(true, self)
-        case UIImage(systemName: "checkmark"):
-//            quantityButton.setImage(UIImage(systemName: "plus"), for: .normal)
-//            quantityButton.alpha = 1
-            doneCheck(false)
+        case Image.checkMark:
+            trackerIsCompleted(false)
             quantity -= 1
-            switchDay()
+            setQuantityLabelText()
             delegate?.record(false, self)
         case .none:
             break
@@ -162,7 +133,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    private func switchDay() {
+    private func setQuantityLabelText() {
         switch quantity {
         case 1:
             quantityLabel.text = "\(quantity) \(days[1])"
@@ -188,15 +159,17 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         colorView.backgroundColor = model.color
         quantityButton.backgroundColor = model.color
         emojiLabel.text = model.emoji
+        
+        nameLabel.addInterlineSpacing(spacingValue: 18 - nameLabel.font.lineHeight)
     }
     
-    func doneCheck(_ sender: Bool) {
+    func trackerIsCompleted(_ sender: Bool) {
         switch sender {
         case true:
-            quantityButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
+            quantityButton.setImage(Image.checkMark, for: .normal)
             quantityButton.alpha = 0.3
         case false:
-            quantityButton.setImage(UIImage(systemName: "plus"), for: .normal)
+            quantityButton.setImage(Image.plus, for: .normal)
             quantityButton.alpha = 1
         }
     }
@@ -209,12 +182,10 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             quantityButton.isEnabled = false
             quantityButton.alpha = 0
         }
-        
-//        quantityButton.isEnabled = sender
     }
     
     func setQuantity(_ sender: Int) {
         quantity = sender
-        switchDay()
+        setQuantityLabelText()
     }
 }

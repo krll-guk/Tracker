@@ -1,11 +1,26 @@
 import UIKit
 
 final class SupplementaryView: UICollectionReusableView {
-    let titleLabel = UILabel()
+    
+    static let reuseIdentifier = "SupplementaryViewHeader"
+    
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = Font.bold19
+        label.tintColor = Color.black
+        return label
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        setupTitleLabel()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupTitleLabel() {
         addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -16,7 +31,7 @@ final class SupplementaryView: UICollectionReusableView {
         ])
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    func setTitle(_ title: String) {
+        titleLabel.text = title
     }
 }

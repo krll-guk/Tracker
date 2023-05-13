@@ -2,27 +2,39 @@ import UIKit
 
 final class ScheduleViewController: UIViewController {
     
+    static var schedule: [String] = []
+    static var scheduleForTable: String = ""
+    
+    private let titles = Constant.scheduleVCTableTitles
+    private var selectedSchedule = [Int: String]()
+    
+    private lazy var viewNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = Font.medium16
+        label.textColor = Color.black
+        label.text = Constant.scheduleVCTitle
+        return label
+    }()
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.layer.cornerRadius = 16
+        tableView.separatorColor = Color.gray
         tableView.isScrollEnabled = false
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: Constant.scheduleVCReuseIdentifier)
+        tableView.dataSource = self
+        tableView.delegate = self
         return tableView
     }()
     
-    private let titles = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
-    private var selectedSchedule = [Int: String]()
-    
-    static var schedule = [String]()
-    static var scheduleForTable = ""
-    
     private lazy var readyButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .black
+        button.backgroundColor = Color.black
         button.layer.cornerRadius = 16
-        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        button.setTitleColor(.white, for: .normal)
-        button.setTitle("Готово", for: .normal)
+        button.titleLabel?.font = Font.medium16
+        button.setTitleColor(Color.white, for: .normal)
+        button.setTitle(Constant.scheduleVCButton, for: .normal)
+        button.addTarget(self, action: #selector(readyButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -32,39 +44,37 @@ final class ScheduleViewController: UIViewController {
     }
     
     private func setupView() {
-        navigationItem.hidesBackButton = true
-        view.backgroundColor = .white
-        title = "Расписание"
+        view.backgroundColor = Color.white
         
-        setupTableView()
-        setupReadyButton()
+        [viewNameLabel, tableView, readyButton].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        [viewNameLabel, tableView, readyButton].forEach {
+            view.addSubview($0)
+        }
+        
+        setConstraints()
     }
     
-    private func setupTableView() {
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView)
-        
+    private func setConstraints() {
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            // viewNameLabel
+            viewNameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 27),
+            viewNameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            viewNameLabel.heightAnchor.constraint(equalToConstant: 22),
+            
+            // tableView
+            tableView.topAnchor.constraint(equalTo: viewNameLabel.bottomAnchor, constant: 30),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            tableView.heightAnchor.constraint(equalToConstant: 524)
-        ])
-        
-        tableView.dataSource = self
-        tableView.delegate = self
-    }
-    
-    private func setupReadyButton() {
-        readyButton.addTarget(self, action: #selector(readyButtonTapped), for: .touchUpInside)
-        readyButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(readyButton)
-        
-        NSLayoutConstraint.activate([
+            tableView.heightAnchor.constraint(equalToConstant: 524),
+            
+            // readyButton
             readyButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             readyButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             readyButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            readyButton.heightAnchor.constraint(equalToConstant: 60)
+            readyButton.heightAnchor.constraint(equalToConstant: 60),
         ])
     }
     
@@ -84,13 +94,17 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: Constant.scheduleVCReuseIdentifier,
+            for: indexPath
+        )
+        
         cell.textLabel?.text = titles[indexPath.row]
         cell.selectionStyle = .none
-        cell.backgroundColor = UIColor(named: "Background")
+        cell.backgroundColor = Color.background
+        cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         
         addSwitchView(cell: cell, indexPath: indexPath)
-        cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         
         return cell
     }
@@ -101,7 +115,7 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     
     private func addSwitchView(cell: UITableViewCell, indexPath: IndexPath) {
         let switchView = UISwitch(frame: .zero)
-        switchView.onTintColor = .systemBlue
+        switchView.onTintColor = Color.blue
         switchView.setOn(false, animated: true)
         switchView.tag = indexPath.row
         switchView.addTarget(self, action: #selector(self.switchChanged), for: .valueChanged)

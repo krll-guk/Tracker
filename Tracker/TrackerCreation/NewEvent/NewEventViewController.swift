@@ -1,18 +1,19 @@
 import UIKit
 
-final class NewHabitViewController: UIViewController {
+final class NewEventViewController: UIViewController {
     
-    static let didChangeNotification = Notification.Name(rawValue: "NewHabitDidChange")
+    static let didChangeNotification = Notification.Name(rawValue: "NewEventDidChange")
     
-    private let titles = Constant.newHabitVCTableTitles
+    private let titles = Constant.newEventVCTableTitles
     
     private var newTrackerName: String = ""
+    private var currentDateString: String = ""
 
     private lazy var viewNameLabel: UILabel = {
         let label = UILabel()
         label.font = Font.medium16
         label.textColor = Color.black
-        label.text = Constant.newHabitVCTitle
+        label.text = Constant.newEventVCTitle
         return label
     }()
     
@@ -58,7 +59,7 @@ final class NewHabitViewController: UIViewController {
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.layer.cornerRadius = 16
-        tableView.separatorColor = Color.gray
+        tableView.separatorStyle = .none
         tableView.isScrollEnabled = false
         tableView.register(
             TrackerSettingsTableViewCell.self,
@@ -153,7 +154,7 @@ final class NewHabitViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            tableView.heightAnchor.constraint(equalToConstant: 149),
+            tableView.heightAnchor.constraint(equalToConstant: 74),
             
             // buttonsStackView
             buttonsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -174,12 +175,14 @@ final class NewHabitViewController: UIViewController {
         guard let color = Color.colorSelectionArray.randomElement()! else { return }
         guard let emoji = Constant.emojis.randomElement() else { return }
         
+        currentDateString = AppDateFormatter.shared.dateString(from: Date())
+        
         let newTracker = Tracker(
             id: UUID(),
             name: newTrackerName,
             color: color,
             emoji: emoji,
-            schedule: ScheduleViewController.schedule
+            schedule: [currentDateString]
         )
         
         TrackersViewController.newCategory = TrackerCategory(
@@ -188,7 +191,7 @@ final class NewHabitViewController: UIViewController {
         )
         
         NotificationCenter.default.post(
-            name: NewHabitViewController.didChangeNotification,
+            name: NewEventViewController.didChangeNotification,
             object: self,
             userInfo: nil
         )
@@ -200,14 +203,13 @@ final class NewHabitViewController: UIViewController {
     private func clearData() {
         CategoryViewController.category = ""
         newTrackerName = ""
-        ScheduleViewController.scheduleForTable = ""
-        ScheduleViewController.schedule = []
+        currentDateString = ""
     }
 }
 
-extension NewHabitViewController {
+extension NewEventViewController {
     private func activateCreateButton() {
-        if newTrackerName != "" && CategoryViewController.category != "" && ScheduleViewController.scheduleForTable != "" {
+        if newTrackerName != "" && CategoryViewController.category != "" {
             UIView.animate(withDuration: 0.3, delay: 0, options: [.curveLinear]) {
                 self.createButton.isEnabled = true
                 self.createButton.backgroundColor = Color.black
@@ -223,7 +225,7 @@ extension NewHabitViewController {
     }
 }
 
-extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
+extension NewEventViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return titles.count
     }
@@ -234,16 +236,8 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
             for: indexPath
         ) as? TrackerSettingsTableViewCell else { return UITableViewCell() }
         
-        switch indexPath.row {
-        case 0:
-            cell.setDescription(CategoryViewController.category)
-        case 1:
-            cell.setDescription(ScheduleViewController.scheduleForTable)
-        default:
-            break
-        }
+        cell.setDescription(CategoryViewController.category)
         
-        cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         cell.setTitle(titles[indexPath.row])
         
         return cell
@@ -254,20 +248,12 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.row {
-        case 0:
-            deactivateCreateButton()
-            navigationController?.pushViewController(CategoryViewController(), animated: true)
-        case 1:
-            deactivateCreateButton()
-            navigationController?.pushViewController(ScheduleViewController(), animated: true)
-        default:
-            break
-        }
+        deactivateCreateButton()
+        navigationController?.pushViewController(CategoryViewController(), animated: true)
     }
 }
 
-extension NewHabitViewController: UITextFieldDelegate {
+extension NewEventViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
         let maxLength = 38
@@ -299,7 +285,7 @@ extension NewHabitViewController: UITextFieldDelegate {
     }
 }
 
-extension NewHabitViewController {
+extension NewEventViewController {
     private func showError() {
         if errorLabel.isHidden {
             UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) {

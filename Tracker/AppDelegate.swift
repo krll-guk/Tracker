@@ -7,11 +7,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        
-//        UINavigationBar.appearance().titleTextAttributes = [
-//            .foregroundColor : Colors.black ?? .black,
-//            .font : Fonts.medium16,
-//        ]
         UINavigationBar.appearance().largeTitleTextAttributes = [
             .foregroundColor : Color.black ?? .black,
             .font : Font.bold34

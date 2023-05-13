@@ -8,20 +8,24 @@ final class TabBarController: UITabBarController {
     }
     
     private func setupTabBar() {
+        tabBar.tintColor = Color.blue
+        tabBar.unselectedItemTintColor = Color.gray
+        tabBar.backgroundColor = Color.white
+        
         let trackersViewController = UINavigationController(rootViewController: TrackersViewController())
         trackersViewController.tabBarItem = UITabBarItem(
-            title: "Трекеры",
-            image: UIImage(systemName: "record.circle.fill"),
+            title: Constant.leftTabBarTitle,
+            image: Image.tabBarLeft,
             selectedImage: nil
         )
         
         let statisticsViewController = UINavigationController(rootViewController: StatisticsViewController())
         statisticsViewController.tabBarItem = UITabBarItem(
-            title: "Статистика",
-            image: UIImage(systemName: "hare.fill"),
+            title: Constant.rightTabBarTitle,
+            image: Image.tabBarRight,
             selectedImage: nil
         )
         
-        self.viewControllers = [trackersViewController, statisticsViewController]
+        viewControllers = [trackersViewController, statisticsViewController]
     }
 }

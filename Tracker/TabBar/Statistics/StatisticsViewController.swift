@@ -8,8 +8,14 @@ final class StatisticsViewController: UIViewController {
     }
     
     private func setupView() {
-        view.backgroundColor = .white
-        title = "Статистика"
+        view.backgroundColor = Color.white
+        title = Constant.rightTabBarTitle
+        
+        setupNavigationBar()
+    }
+    
+    private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.backgroundColor = Color.white
     }
 }

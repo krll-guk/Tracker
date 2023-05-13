@@ -1,8 +1,8 @@
 import UIKit
 
-final class NewTrackerTableViewCell: UITableViewCell {
+final class TrackerSettingsTableViewCell: UITableViewCell {
     
-    static let reuseIdentifier = "NewTrackerTableViewCell"
+    static let reuseIdentifier = "TrackerSettingsTableViewCell"
     
     private lazy var stackView: UIStackView = {
         let stack = UIStackView()
@@ -32,7 +32,7 @@ final class NewTrackerTableViewCell: UITableViewCell {
     
     private lazy var chevronImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "chevron.right")?.withRenderingMode(.alwaysTemplate)
+        imageView.image = Image.chevron
         imageView.tintColor = Color.gray
         imageView.contentMode = .center
         return imageView

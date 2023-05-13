@@ -2,23 +2,44 @@ import UIKit
 
 final class TrackerCreationViewController: UIViewController {
     
+    private lazy var viewNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = Font.medium16
+        label.textColor = Color.black
+        label.text = Constant.trackerCreationVCTitle
+        return label
+    }()
+    
+    private lazy var stackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 16
+        stack.alignment = .fill
+        stack.distribution = .fillEqually
+        stack.addArrangedSubview(habitButton)
+        stack.addArrangedSubview(eventButton)
+        return stack
+    }()
+    
     private lazy var habitButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .black
+        button.backgroundColor = Color.black
         button.layer.cornerRadius = 16
-        button.setTitle("Привычка", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
+        button.setTitle(Constant.trackerCreationVCHabitButton, for: .normal)
+        button.setTitleColor(Color.white, for: .normal)
+        button.titleLabel?.font = Font.medium16
+        button.addTarget(self, action: #selector(habitButtonTapped), for: .touchUpInside)
         return button
     }()
     
-    private lazy var irregularEventButton: UIButton = {
+    private lazy var eventButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .black
+        button.backgroundColor = Color.black
         button.layer.cornerRadius = 16
-        button.setTitle("Нерегулярные событие", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
+        button.setTitle(Constant.trackerCreationVCEventButton, for: .normal)
+        button.setTitleColor(Color.white, for: .normal)
+        button.titleLabel?.font = Font.medium16
+        button.addTarget(self, action: #selector(eventButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -29,35 +50,31 @@ final class TrackerCreationViewController: UIViewController {
     
     private func setupView() {
         navigationController?.isNavigationBarHidden = true
-        view.backgroundColor = .white
-        title = "Создание трекера"
-        setupHabitButton()
-        setupIrregularEventButton()
+        view.backgroundColor = Color.white
+        
+        [viewNameLabel, stackView].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        [viewNameLabel, stackView].forEach {
+            view.addSubview($0)
+        }
+        
+        setConstraints()
     }
     
-    private func setupHabitButton() {
-        habitButton.addTarget(self, action: #selector(habitButtonTapped), for: .touchUpInside)
-        habitButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(habitButton)
-        
+    private func setConstraints() {
         NSLayoutConstraint.activate([
-            habitButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -8),
-            habitButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            habitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            habitButton.heightAnchor.constraint(equalToConstant: 60)
-        ])
-    }
-    
-    private func setupIrregularEventButton() {
-        irregularEventButton.addTarget(self, action: #selector(irregularEventButtonTapped), for: .touchUpInside)
-        irregularEventButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(irregularEventButton)
-        
-        NSLayoutConstraint.activate([
-            irregularEventButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: 8),
-            irregularEventButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            irregularEventButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            irregularEventButton.heightAnchor.constraint(equalToConstant: 60)
+            // viewNameLabel
+            viewNameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 27),
+            viewNameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            viewNameLabel.heightAnchor.constraint(equalToConstant: 22),
+            
+            // stackView
+            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 31.5),
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            stackView.heightAnchor.constraint(equalToConstant: 136),
         ])
     }
     
@@ -65,7 +82,7 @@ final class TrackerCreationViewController: UIViewController {
         navigationController?.pushViewController(NewHabitViewController(), animated: true)
     }
     
-    @objc private func irregularEventButtonTapped() {
-        navigationController?.pushViewController(NewIrregularEventViewController(), animated: true)
+    @objc private func eventButtonTapped() {
+        navigationController?.pushViewController(NewEventViewController(), animated: true)
     }
 }
