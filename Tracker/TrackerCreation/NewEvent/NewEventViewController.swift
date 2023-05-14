@@ -7,7 +7,6 @@ final class NewEventViewController: UIViewController {
     private let titles = Constant.newEventVCTableTitles
     
     private var newTrackerName: String = ""
-    private var currentDateString: String = ""
 
     private lazy var viewNameLabel: UILabel = {
         let label = UILabel()
@@ -175,14 +174,12 @@ final class NewEventViewController: UIViewController {
         guard let color = Color.colorSelectionArray.randomElement()! else { return }
         guard let emoji = Constant.emojis.randomElement() else { return }
         
-        currentDateString = AppDateFormatter.shared.dateString(from: Date())
-        
         let newTracker = Tracker(
             id: UUID(),
             name: newTrackerName,
             color: color,
             emoji: emoji,
-            schedule: [currentDateString]
+            schedule: [TrackersViewController.dateForNewEvent]
         )
         
         TrackersViewController.newCategory = TrackerCategory(
@@ -203,7 +200,6 @@ final class NewEventViewController: UIViewController {
     private func clearData() {
         CategoryViewController.category = ""
         newTrackerName = ""
-        currentDateString = ""
     }
 }
 

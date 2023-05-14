@@ -3,6 +3,7 @@ import UIKit
 final class TrackersViewController: UIViewController {
     
     static var newCategory: TrackerCategory?
+    static var dateForNewEvent = ""
     
     private var newHabitObserver: NSObjectProtocol?
     private var newEventObserver: NSObjectProtocol?
@@ -199,6 +200,8 @@ extension TrackersViewController {
         weekDayString = AppDateFormatter.shared.weekDayString(from: datePicker.date)
         datePickerDateString = AppDateFormatter.shared.dateString(from: datePicker.date)
         currentDateString = AppDateFormatter.shared.dateString(from: Date())
+        
+        TrackersViewController.dateForNewEvent = datePickerDateString
         
         visibleCategories = []
         var trackers: [Tracker] = []

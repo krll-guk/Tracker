@@ -47,5 +47,6 @@ enum Constant {
         "Понедельник", "Вторник", "Среда", "Четверг",
         "Пятница", "Суббота", "Воскресенье"
     ]
+    static let scheduleVCEverydayDescription = "Каждый день"
     static let scheduleVCButton = "Готово"
 }

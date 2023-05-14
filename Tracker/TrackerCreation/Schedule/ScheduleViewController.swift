@@ -83,7 +83,11 @@ final class ScheduleViewController: UIViewController {
         let valuesArraySorted = Array(sorted.map({ $0.value }))
         
         ScheduleViewController.schedule = valuesArraySorted
-        ScheduleViewController.scheduleForTable = valuesArraySorted.joined(separator:", ")
+        if valuesArraySorted.count == 7 {
+            ScheduleViewController.scheduleForTable = Constant.scheduleVCEverydayDescription
+        } else {
+            ScheduleViewController.scheduleForTable = valuesArraySorted.joined(separator:", ")
+        }
         navigationController?.popViewController(animated: true)
     }
 }
