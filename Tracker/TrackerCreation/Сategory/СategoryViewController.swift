@@ -2,7 +2,7 @@ import UIKit
 
 final class CategoryViewController: UIViewController {
     
-    static var category = ""
+    var completionHandler: ((String) -> Void)?
     
     private let mockData = ["Важное", "Дом", "Разное"]
     
@@ -63,9 +63,6 @@ final class CategoryViewController: UIViewController {
         
         [viewNameLabel, placeholderStackView, addCategoryButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
-        }
-        
-        [viewNameLabel, placeholderStackView, addCategoryButton].forEach {
             view.addSubview($0)
         }
         
@@ -92,7 +89,8 @@ final class CategoryViewController: UIViewController {
     }
     
     @objc private func addCategoryButtonTapped() {
-        CategoryViewController.category = mockData.randomElement() ?? ""
+        let category = mockData.randomElement() ?? ""
+        completionHandler?(category)
         navigationController?.popViewController(animated: true)
     }
 }

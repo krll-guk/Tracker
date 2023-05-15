@@ -1,8 +1,8 @@
 import UIKit
 
-final class TrackerSettingsTableViewCell: UITableViewCell {
+final class NewTrackerSettingsTableViewCell: UITableViewCell {
     
-    static let reuseIdentifier = "TrackerSettingsTableViewCell"
+    static let reuseIdentifier = "NewTrackerSettingsTableViewCell"
     
     private lazy var stackView: UIStackView = {
         let stack = UIStackView()
@@ -53,9 +53,6 @@ final class TrackerSettingsTableViewCell: UITableViewCell {
         
         [stackView, chevronImageView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
-        }
-        
-        [stackView, chevronImageView].forEach {
             contentView.addSubview($0)
         }
         

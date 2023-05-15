@@ -2,8 +2,7 @@ import UIKit
 
 final class ScheduleViewController: UIViewController {
     
-    static var schedule: [String] = []
-    static var scheduleForTable: String = ""
+    var completionHandler: (([String]) -> Void)?
     
     private let titles = Constant.scheduleVCTableTitles
     private var selectedSchedule = [Int: String]()
@@ -48,9 +47,6 @@ final class ScheduleViewController: UIViewController {
         
         [viewNameLabel, tableView, readyButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
-        }
-        
-        [viewNameLabel, tableView, readyButton].forEach {
             view.addSubview($0)
         }
         
@@ -68,7 +64,7 @@ final class ScheduleViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: viewNameLabel.bottomAnchor, constant: 30),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            tableView.heightAnchor.constraint(equalToConstant: 524),
+            tableView.heightAnchor.constraint(equalToConstant: 524.5),
             
             // readyButton
             readyButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
@@ -79,15 +75,10 @@ final class ScheduleViewController: UIViewController {
     }
     
     @objc private func readyButtonTapped() {
-        let sorted = selectedSchedule.sorted { $0.key < $1.key }
-        let valuesArraySorted = Array(sorted.map({ $0.value }))
-        
-        ScheduleViewController.schedule = valuesArraySorted
-        if valuesArraySorted.count == 7 {
-            ScheduleViewController.scheduleForTable = Constant.scheduleVCEverydayDescription
-        } else {
-            ScheduleViewController.scheduleForTable = valuesArraySorted.joined(separator:", ")
-        }
+        let sortedSchedule = selectedSchedule.sorted { $0.key < $1.key }
+        let schedule = Array(sortedSchedule.map({ $0.value }))
+
+        completionHandler?(schedule)
         navigationController?.popViewController(animated: true)
     }
 }

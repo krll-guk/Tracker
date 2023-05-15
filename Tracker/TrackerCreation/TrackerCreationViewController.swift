@@ -1,6 +1,13 @@
 import UIKit
 
+protocol TrackerCreationViewControllerDelegate: AnyObject {
+    func setDateForNewEvent() -> String
+    func updateCategories(_ newCategory: TrackerCategory)
+}
+
 final class TrackerCreationViewController: UIViewController {
+    
+    public weak var delegate: TrackerCreationViewControllerDelegate?
     
     private lazy var viewNameLabel: UILabel = {
         let label = UILabel()
@@ -54,9 +61,6 @@ final class TrackerCreationViewController: UIViewController {
         
         [viewNameLabel, stackView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
-        }
-        
-        [viewNameLabel, stackView].forEach {
             view.addSubview($0)
         }
         
@@ -78,11 +82,27 @@ final class TrackerCreationViewController: UIViewController {
         ])
     }
     
-    @objc private func habitButtonTapped() {
-        navigationController?.pushViewController(NewHabitViewController(), animated: true)
+    @objc
+    private func habitButtonTapped() {
+        let vc = NewTrackerViewController(.habit)
+        vc.delegate = self
+        navigationController?.pushViewController(vc, animated: true)
     }
     
-    @objc private func eventButtonTapped() {
-        navigationController?.pushViewController(NewEventViewController(), animated: true)
+    @objc
+    private func eventButtonTapped() {
+        let vc = NewTrackerViewController(.event)
+        vc.delegate = self
+        navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+extension TrackerCreationViewController: NewTrackerControllerDelegate{
+    func updateCategories(_ newCategory: TrackerCategory) {
+        delegate?.updateCategories(newCategory)
+    }
+    
+    func setDateForNewEvent() -> String {
+        delegate?.setDateForNewEvent() ?? ""
     }
 }

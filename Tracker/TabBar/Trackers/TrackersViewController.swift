@@ -1,13 +1,7 @@
 import UIKit
 
 final class TrackersViewController: UIViewController {
-    
-    static var newCategory: TrackerCategory?
-    static var dateForNewEvent = ""
-    
-    private var newHabitObserver: NSObjectProtocol?
-    private var newEventObserver: NSObjectProtocol?
-    
+
     private var categories: [TrackerCategory] = []
     private var visibleCategories: [TrackerCategory] = []
     private var visibleCategoriesForSearch: [TrackerCategory] = []
@@ -83,8 +77,7 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        checkPlaceholderVisibility()
-        setNotifications()
+        updateVisibleCategories()
     }
     
     private func setupView() {
@@ -93,9 +86,6 @@ final class TrackersViewController: UIViewController {
         
         [placeholderStackView, collectionView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
-        }
-        
-        [placeholderStackView, collectionView].forEach {
             view.addSubview($0)
         }
         
@@ -130,29 +120,12 @@ final class TrackersViewController: UIViewController {
         navigationController?.navigationBar.backgroundColor = Color.white
     }
     
-    @objc private func addButtonTapped() {
-        let navigationController = UINavigationController(rootViewController: TrackerCreationViewController())
+    @objc
+    private func addButtonTapped() {
+        let vc = TrackerCreationViewController()
+        vc.delegate = self
+        let navigationController = UINavigationController(rootViewController: vc)
         present(navigationController, animated: true)
-    }
-    
-    private func setNotifications() {
-        newHabitObserver = NotificationCenter.default.addObserver(
-            forName: NewHabitViewController.didChangeNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            guard let self = self else { return }
-            self.updateCategories()
-        }
-        
-        newEventObserver = NotificationCenter.default.addObserver(
-            forName: NewEventViewController.didChangeNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            guard let self = self else { return }
-            self.updateCategories()
-        }
     }
     
     private func checkPlaceholderVisibility() {
@@ -167,41 +140,12 @@ final class TrackersViewController: UIViewController {
             placeholderStackView.isHidden = true
         }
     }
-}
-
-extension TrackersViewController {
-    private func updateCategories() {
-        if let newCategory = TrackersViewController.newCategory {
-            if categories.isEmpty {
-                categories.insert(newCategory, at: 0)
-            } else {
-                for category in categories {
-                    if category.header == newCategory.header {
-                        let updatedCategory = TrackerCategory(
-                            header: newCategory.header,
-                            trackers: newCategory.trackers + category.trackers
-                        )
-                        categories.removeAll { $0.header == updatedCategory.header }
-                        categories.insert(updatedCategory, at: 0)
-                    }
-                }
-                
-                if !categories.contains(where: { $0.header == newCategory.header }) {
-                    categories.insert(newCategory, at: 0)
-                }
-            }
-        }
-        
-        updateVisibleCategories()
-    }
     
     @objc
     private func updateVisibleCategories() {
         weekDayString = AppDateFormatter.shared.weekDayString(from: datePicker.date)
         datePickerDateString = AppDateFormatter.shared.dateString(from: datePicker.date)
         currentDateString = AppDateFormatter.shared.dateString(from: Date())
-        
-        TrackersViewController.dateForNewEvent = datePickerDateString
         
         visibleCategories = []
         var trackers: [Tracker] = []
@@ -229,6 +173,35 @@ extension TrackersViewController {
             checkPlaceholderVisibility()
             collectionView.reloadData()
         }
+    }
+}
+
+extension TrackersViewController: TrackerCreationViewControllerDelegate {
+    func setDateForNewEvent() -> String {
+        return datePickerDateString
+    }
+    
+    func updateCategories(_ newCategory: TrackerCategory) {
+        var index: Int = 0
+
+        if !categories.contains(where: { $0.header == newCategory.header }) {
+            categories.insert(newCategory, at: 0)
+        } else {
+            for category in categories {
+                if category.header == newCategory.header {
+                    let updatedCategory = TrackerCategory(
+                        header: newCategory.header,
+                        trackers: newCategory.trackers + category.trackers
+                    )
+                    categories.remove(at: index)
+                    categories.insert(updatedCategory, at: 0)
+                }
+                index += 1
+            }
+        }
+        
+        index = 0
+        updateVisibleCategories()
     }
 }
 

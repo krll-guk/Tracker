@@ -1,18 +1,37 @@
 import UIKit
 
-final class NewHabitViewController: UIViewController {
+protocol NewTrackerControllerDelegate: AnyObject {
+    func setDateForNewEvent() -> String
+    func updateCategories(_ newCategory: TrackerCategory)
+}
+
+final class NewTrackerViewController: UIViewController {
     
-    static let didChangeNotification = Notification.Name(rawValue: "NewHabitDidChange")
+    public weak var delegate: NewTrackerControllerDelegate?
     
-    private let titles = Constant.newHabitVCTableTitles
+    private let trackerType: TrackerType
+    
+    private var tableTitles: [String] = []
+    private var scheduleForTable: String = ""
+    private var tableHeight: CGFloat = 0
     
     private var newTrackerName: String = ""
-
+    private var categoryName: String = ""
+    private var schedule: [String] = []
+    
+    init(_ trackerType: TrackerType) {
+        self.trackerType = trackerType
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private lazy var viewNameLabel: UILabel = {
         let label = UILabel()
         label.font = Font.medium16
         label.textColor = Color.black
-        label.text = Constant.newHabitVCTitle
         return label
     }()
     
@@ -61,8 +80,8 @@ final class NewHabitViewController: UIViewController {
         tableView.separatorColor = Color.gray
         tableView.isScrollEnabled = false
         tableView.register(
-            TrackerSettingsTableViewCell.self,
-            forCellReuseIdentifier: TrackerSettingsTableViewCell.reuseIdentifier
+            NewTrackerSettingsTableViewCell.self,
+            forCellReuseIdentifier: NewTrackerSettingsTableViewCell.reuseIdentifier
         )
         tableView.dataSource = self
         tableView.delegate = self
@@ -106,13 +125,14 @@ final class NewHabitViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        switchType()
         setupView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView.reloadData()
-        activateCreateButton()
+        checkCreateButton()
     }
     
     private func setupView() {
@@ -120,9 +140,6 @@ final class NewHabitViewController: UIViewController {
         
         [viewNameLabel, stackView, tableView, buttonsStackView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
-        }
-        
-        [viewNameLabel, stackView, tableView, buttonsStackView].forEach {
             view.addSubview($0)
         }
         
@@ -153,7 +170,7 @@ final class NewHabitViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            tableView.heightAnchor.constraint(equalToConstant: 149),
+            tableView.heightAnchor.constraint(equalToConstant: tableHeight),
             
             // buttonsStackView
             buttonsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -173,45 +190,74 @@ final class NewHabitViewController: UIViewController {
     private func createButtonTapped() {
         guard let color = Color.colorSelectionArray.randomElement()! else { return }
         guard let emoji = Constant.emojis.randomElement() else { return }
+        guard let date = delegate?.setDateForNewEvent() else { return }
+        
+        let newTrackerSchedule: [String]
+        
+        switch trackerType {
+        case .habit:
+            newTrackerSchedule = self.schedule
+        case .event:
+            newTrackerSchedule = [date]
+        }
         
         let newTracker = Tracker(
             id: UUID(),
             name: newTrackerName,
             color: color,
             emoji: emoji,
-            schedule: ScheduleViewController.schedule
+            schedule: newTrackerSchedule
         )
         
-        TrackersViewController.newCategory = TrackerCategory(
-            header: CategoryViewController.category,
+        let newCategory = TrackerCategory(
+            header: categoryName,
             trackers: [newTracker]
         )
         
-        NotificationCenter.default.post(
-            name: NewHabitViewController.didChangeNotification,
-            object: self,
-            userInfo: nil
-        )
+        delegate?.updateCategories(newCategory)
         
         clearData()
         dismiss(animated: true)
     }
     
     private func clearData() {
-        CategoryViewController.category = ""
+        categoryName = ""
         newTrackerName = ""
-        ScheduleViewController.scheduleForTable = ""
-        ScheduleViewController.schedule = []
+        scheduleForTable = ""
+        schedule = []
+    }
+    
+    private func switchType() {
+        switch trackerType {
+        case .habit:
+            viewNameLabel.text = Constant.newHabitTitle
+            tableTitles = Constant.newHabitTableTitles
+        case .event:
+            viewNameLabel.text = Constant.newEventTitle
+            tableTitles = Constant.newEventTableTitles
+        }
+        tableHeight = CGFloat(tableTitles.count * 75) - 0.5
     }
 }
 
-extension NewHabitViewController {
-    private func activateCreateButton() {
-        if newTrackerName != "" && CategoryViewController.category != "" && ScheduleViewController.scheduleForTable != "" {
-            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveLinear]) {
-                self.createButton.isEnabled = true
-                self.createButton.backgroundColor = Color.black
+extension NewTrackerViewController {
+    private func checkCreateButton() {
+        switch trackerType {
+        case .habit:
+            if newTrackerName != "" && categoryName != "" && scheduleForTable != "" {
+                activateCreateButton()
             }
+        case .event:
+            if newTrackerName != "" && categoryName != "" {
+                activateCreateButton()
+            }
+        }
+    }
+    
+    private func activateCreateButton() {
+        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveLinear]) {
+            self.createButton.isEnabled = true
+            self.createButton.backgroundColor = Color.black
         }
     }
     
@@ -223,28 +269,28 @@ extension NewHabitViewController {
     }
 }
 
-extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
+extension NewTrackerViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return titles.count
+        return tableTitles.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: TrackerSettingsTableViewCell.reuseIdentifier,
+            withIdentifier: NewTrackerSettingsTableViewCell.reuseIdentifier,
             for: indexPath
-        ) as? TrackerSettingsTableViewCell else { return UITableViewCell() }
+        ) as? NewTrackerSettingsTableViewCell else { return UITableViewCell() }
         
         switch indexPath.row {
         case 0:
-            cell.setDescription(CategoryViewController.category)
+            cell.setDescription(categoryName)
         case 1:
-            cell.setDescription(ScheduleViewController.scheduleForTable)
+            cell.setDescription(scheduleForTable)
         default:
             break
         }
         
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        cell.setTitle(titles[indexPath.row])
+        cell.setTitle(tableTitles[indexPath.row])
         
         return cell
     }
@@ -257,17 +303,33 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
         switch indexPath.row {
         case 0:
             deactivateCreateButton()
-            navigationController?.pushViewController(CategoryViewController(), animated: true)
+            let vc = CategoryViewController()
+            vc.completionHandler = { [weak self] category in
+                guard let self = self else { return }
+                self.categoryName = category
+            }
+            navigationController?.pushViewController(vc, animated: true)
         case 1:
             deactivateCreateButton()
-            navigationController?.pushViewController(ScheduleViewController(), animated: true)
+            let vc = ScheduleViewController()
+            vc.completionHandler = { [weak self] schedule in
+                guard let self = self else { return }
+                self.schedule = schedule
+                
+                if schedule.count == 7 {
+                    self.scheduleForTable = Constant.scheduleVCEverydayDescription
+                } else {
+                    self.scheduleForTable = self.schedule.joined(separator:", ")
+                }
+            }
+            navigationController?.pushViewController(vc, animated: true)
         default:
             break
         }
     }
 }
 
-extension NewHabitViewController: UITextFieldDelegate {
+extension NewTrackerViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
         let maxLength = 38
@@ -294,29 +356,27 @@ extension NewHabitViewController: UITextFieldDelegate {
         textField.resignFirstResponder()
         newTrackerName = textField.text ?? ""
         hideError()
-        activateCreateButton()
+        checkCreateButton()
         return true
     }
 }
 
-extension NewHabitViewController {
+extension NewTrackerViewController {
     private func showError() {
-        if errorLabel.isHidden {
-            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) {
-                self.errorLabel.alpha = 1.0
-                self.errorLabel.isHidden = false
-                self.stackView.layoutIfNeeded()
-            }
+        guard errorLabel.isHidden else { return }
+        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) {
+            self.errorLabel.alpha = 1.0
+            self.errorLabel.isHidden = false
+            self.stackView.layoutIfNeeded()
         }
     }
     
     private func hideError() {
-        if !errorLabel.isHidden {
-            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) {
-                self.errorLabel.alpha = 0.0
-                self.errorLabel.isHidden = true
-                self.stackView.layoutIfNeeded()
-            }
+        guard !errorLabel.isHidden else { return }
+        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) {
+            self.errorLabel.alpha = 0.0
+            self.errorLabel.isHidden = true
+            self.stackView.layoutIfNeeded()
         }
     }
 }
