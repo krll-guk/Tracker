@@ -1,13 +1,8 @@
 import UIKit
 
-protocol TrackerCreationViewControllerDelegate: AnyObject {
-    func setDateForNewEvent() -> String
-    func updateCategories(_ newCategory: TrackerCategory)
-}
-
 final class TrackerCreationViewController: UIViewController {
     
-    public weak var delegate: TrackerCreationViewControllerDelegate?
+    public weak var delegate: NewTrackerViewControllerDelegate?
     
     private lazy var viewNameLabel: UILabel = {
         let label = UILabel()
@@ -97,7 +92,7 @@ final class TrackerCreationViewController: UIViewController {
     }
 }
 
-extension TrackerCreationViewController: NewTrackerControllerDelegate{
+extension TrackerCreationViewController: NewTrackerViewControllerDelegate{
     func updateCategories(_ newCategory: TrackerCategory) {
         delegate?.updateCategories(newCategory)
     }

@@ -176,7 +176,7 @@ final class TrackersViewController: UIViewController {
     }
 }
 
-extension TrackersViewController: TrackerCreationViewControllerDelegate {
+extension TrackersViewController: NewTrackerViewControllerDelegate {
     func setDateForNewEvent() -> String {
         return datePickerDateString
     }

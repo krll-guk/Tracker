@@ -19,7 +19,7 @@ enum Constant {
     // TrackerCreationViewController
     static let trackerCreationVCTitle = "Создание трекера"
     static let trackerCreationVCHabitButton = "Привычка"
-    static let trackerCreationVCEventButton = "Нерегулярные событие"
+    static let trackerCreationVCEventButton = "Нерегулярное событие"
     
     // NewTrackerViewController
     static let newHabitTitle = "Новая привычка"

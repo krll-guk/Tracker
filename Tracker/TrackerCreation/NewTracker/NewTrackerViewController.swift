@@ -1,13 +1,13 @@
 import UIKit
 
-protocol NewTrackerControllerDelegate: AnyObject {
+protocol NewTrackerViewControllerDelegate: AnyObject {
     func setDateForNewEvent() -> String
     func updateCategories(_ newCategory: TrackerCategory)
 }
 
 final class NewTrackerViewController: UIViewController {
     
-    public weak var delegate: NewTrackerControllerDelegate?
+    public weak var delegate: NewTrackerViewControllerDelegate?
     
     private let trackerType: TrackerType
     
