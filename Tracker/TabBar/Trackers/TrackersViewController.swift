@@ -64,9 +64,9 @@ final class TrackersViewController: UIViewController {
             forCellWithReuseIdentifier: TrackerCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SupplementaryView.self,
+            TrackerSupplementaryView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: SupplementaryView.reuseIdentifier
+            withReuseIdentifier: TrackerSupplementaryView.reuseIdentifier
         )
         collectionView.backgroundColor = Color.white
         collectionView.dataSource = self
@@ -273,12 +273,12 @@ extension TrackersViewController: UICollectionViewDataSource {
         var id: String
         switch kind {
         case UICollectionView.elementKindSectionHeader:
-            id = SupplementaryView.reuseIdentifier
+            id = TrackerSupplementaryView.reuseIdentifier
         default:
             id = ""
         }
         
-        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as! SupplementaryView
+        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as! TrackerSupplementaryView
         
         let title = visibleCategories[indexPath.section].header
         view.setTitle(title)

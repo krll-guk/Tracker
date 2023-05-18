@@ -1,8 +1,8 @@
 import UIKit
 
-final class SupplementaryView: UICollectionReusableView {
+final class NewTrackerSupplementaryView: UICollectionReusableView {
     
-    static let reuseIdentifier = "SupplementaryViewHeader"
+    static let reuseIdentifier = "NewTrackerSupplementaryViewHeader"
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
