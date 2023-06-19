@@ -93,8 +93,8 @@ final class TrackerCreationViewController: UIViewController {
 }
 
 extension TrackerCreationViewController: NewTrackerViewControllerDelegate{
-    func updateCategories(_ newCategory: TrackerCategory) {
-        delegate?.updateCategories(newCategory)
+    func updateCategories(with newTracker: Tracker, _ categoryName: String) {
+        delegate?.updateCategories(with: newTracker, categoryName)
     }
     
     func setDateForNewEvent() -> String {

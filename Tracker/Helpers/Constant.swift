@@ -1,6 +1,8 @@
 import Foundation
 
 enum Constant {
+    static let mockData = ["Дом", "Важное", "Разное"]
+    
     static let emojis: [String] = [
         "🙂", "😻", "🌺", "🐶", "❤️", "😱",
         "😇", "😡", "🥶", "🤔", "🙌", "🍔",

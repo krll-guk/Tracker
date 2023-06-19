@@ -20,7 +20,7 @@ final class NewTrackerCollectionViewCell: UICollectionViewCell {
     
     private lazy var colorPickView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 8
+        view.layer.cornerRadius = 11
         view.layer.borderWidth = 3
         view.alpha = 0.3
         return view

@@ -2,7 +2,7 @@ import UIKit
 
 protocol NewTrackerViewControllerDelegate: AnyObject {
     func setDateForNewEvent() -> String
-    func updateCategories(_ newCategory: TrackerCategory)
+    func updateCategories(with newTracker: Tracker, _ categoryName: String)
 }
 
 final class NewTrackerViewController: UIViewController {
@@ -17,7 +17,7 @@ final class NewTrackerViewController: UIViewController {
     
     private var newTrackerName: String = ""
     private var categoryName: String = ""
-    private var schedule: [String] = []
+    private var schedule: String = ""
     private var color: UIColor?
     private var emoji: String?
     
@@ -259,13 +259,13 @@ final class NewTrackerViewController: UIViewController {
         guard let emoji = self.emoji else { return }
         guard let date = delegate?.setDateForNewEvent() else { return }
         
-        let newTrackerSchedule: [String]
+        let newTrackerSchedule: String
         
         switch trackerType {
         case .habit:
             newTrackerSchedule = self.schedule
         case .event:
-            newTrackerSchedule = [date]
+            newTrackerSchedule = date
         }
         
         let newTracker = Tracker(
@@ -276,12 +276,7 @@ final class NewTrackerViewController: UIViewController {
             schedule: newTrackerSchedule
         )
         
-        let newCategory = TrackerCategory(
-            header: categoryName,
-            trackers: [newTracker]
-        )
-        
-        delegate?.updateCategories(newCategory)
+        delegate?.updateCategories(with: newTracker, categoryName)
         
         clearData()
         dismiss(animated: true)
@@ -291,7 +286,7 @@ final class NewTrackerViewController: UIViewController {
         categoryName = ""
         newTrackerName = ""
         scheduleForTable = ""
-        schedule = []
+        schedule = ""
         color = nil
         emoji = nil
     }
@@ -390,7 +385,7 @@ extension NewTrackerViewController: UITableViewDataSource, UITableViewDelegate {
                 if schedule.count == 7 {
                     self.scheduleForTable = Constant.scheduleVCEverydayDescription
                 } else {
-                    self.scheduleForTable = self.schedule.joined(separator:", ")
+                    self.scheduleForTable = self.schedule
                 }
             }
             navigationController?.pushViewController(vc, animated: true)

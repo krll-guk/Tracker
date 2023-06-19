@@ -1,6 +1,9 @@
 import UIKit
 
 final class TrackersViewController: UIViewController {
+    
+    private let trackerCategoryStore = TrackerCategoryStore()
+    private let trackerRecordStore = TrackerRecordStore()
 
     private var categories: [TrackerCategory] = []
     private var visibleCategories: [TrackerCategory] = []
@@ -77,7 +80,22 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        syncData()
+        addMockData()
+    }
+    
+    private func syncData() {
+        trackerCategoryStore.delegate = self
+        trackerRecordStore.delegate = self
+        completedTrackers = trackerRecordStore.completedTrackers
+        categories = trackerCategoryStore.trackerCategories
         updateVisibleCategories()
+    }
+    
+    private func addMockData() {
+        if categories.isEmpty {
+            Constant.mockData.forEach({ try! trackerCategoryStore.addNewCategory($0) })
+        }
     }
     
     private func setupView() {
@@ -152,7 +170,7 @@ final class TrackersViewController: UIViewController {
         
         for category in categories {
             for tracker in category.trackers {
-                if tracker.schedule.contains(where: { $0 == weekDayString || $0 == datePickerDateString }) {
+                if tracker.schedule.contains(weekDayString) || tracker.schedule.contains(datePickerDateString) {
                     trackers.append(tracker)
                 }
             }
@@ -176,32 +194,26 @@ final class TrackersViewController: UIViewController {
     }
 }
 
+extension TrackersViewController: TrackerCategoryStoreDelegate {
+    func didUpdateCategories() {
+        categories = trackerCategoryStore.trackerCategories
+    }
+}
+
+extension TrackersViewController: TrackerRecordStoreDelegate {
+    func didUpdateRecords() {
+        completedTrackers = trackerRecordStore.completedTrackers
+    }
+}
+
 extension TrackersViewController: NewTrackerViewControllerDelegate {
-    func setDateForNewEvent() -> String {
-        return datePickerDateString
+    func updateCategories(with newTracker: Tracker, _ categoryName: String) {
+        try! trackerCategoryStore.addNewTracker(newTracker, to: categoryName)
+        updateVisibleCategories()
     }
     
-    func updateCategories(_ newCategory: TrackerCategory) {
-        var index: Int = 0
-
-        if !categories.contains(where: { $0.header == newCategory.header }) {
-            categories.insert(newCategory, at: 0)
-        } else {
-            for category in categories {
-                if category.header == newCategory.header {
-                    let updatedCategory = TrackerCategory(
-                        header: newCategory.header,
-                        trackers: newCategory.trackers + category.trackers
-                    )
-                    categories.remove(at: index)
-                    categories.insert(updatedCategory, at: 0)
-                }
-                index += 1
-            }
-        }
-        
-        index = 0
-        updateVisibleCategories()
+    func setDateForNewEvent() -> String {
+        return datePickerDateString
     }
 }
 
@@ -214,9 +226,9 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
         
         switch sender {
         case true:
-            completedTrackers.insert(newRecord)
+            try! trackerRecordStore.addRecord(newRecord)
         case false:
-            completedTrackers.remove(newRecord)
+            try! trackerRecordStore.removeRecord(newRecord)
         }
     }
 }

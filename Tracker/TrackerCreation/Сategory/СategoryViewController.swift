@@ -4,8 +4,6 @@ final class CategoryViewController: UIViewController {
     
     var completionHandler: ((String) -> Void)?
     
-    private let mockData = ["Важное", "Дом", "Разное"]
-    
     private lazy var viewNameLabel: UILabel = {
         let label = UILabel()
         label.font = Font.medium16
@@ -89,7 +87,7 @@ final class CategoryViewController: UIViewController {
     }
     
     @objc private func addCategoryButtonTapped() {
-        let category = mockData.randomElement() ?? ""
+        let category = Constant.mockData.randomElement() ?? ""
         completionHandler?(category)
         navigationController?.popViewController(animated: true)
     }

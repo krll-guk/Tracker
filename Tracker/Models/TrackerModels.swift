@@ -5,7 +5,7 @@ struct Tracker {
     let name: String
     let color: UIColor
     let emoji: String
-    let schedule: [String]
+    let schedule: String
 }
 
 struct TrackerCategory {
@@ -31,4 +31,8 @@ enum WeekDay: String, CaseIterable {
 enum TrackerType {
     case habit
     case event
+}
+
+enum StoreError: Error {
+    case decodeError
 }
