@@ -28,7 +28,10 @@ final class TrackerRecordStore: NSObject {
     }()
     
     convenience override init() {
-        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        guard let delegate = UIApplication.shared.delegate as? AppDelegate else {
+            fatalError("could not get app delegate")
+        }
+        let context = delegate.persistentContainer.viewContext
         try! self.init(context: context)
     }
     
@@ -39,8 +42,8 @@ final class TrackerRecordStore: NSObject {
     
     var completedTrackers: Set<TrackerRecord> {
         guard
-            let objects = self.fetchedResultsController.fetchedObjects,
-            let completedTrackers = try? objects.map({ try self.completedTracker(from: $0)})
+            let objects = fetchedResultsController.fetchedObjects,
+            let completedTrackers = try? objects.map({ try completedTracker(from: $0)})
         else { return [] }
         return Set(completedTrackers)
     }

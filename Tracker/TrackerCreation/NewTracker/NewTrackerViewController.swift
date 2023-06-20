@@ -382,7 +382,7 @@ extension NewTrackerViewController: UITableViewDataSource, UITableViewDelegate {
                 guard let self = self else { return }
                 self.schedule = schedule
                 
-                if schedule.count == 7 {
+                if schedule.count == 26 {
                     self.scheduleForTable = Constant.scheduleVCEverydayDescription
                 } else {
                     self.scheduleForTable = self.schedule

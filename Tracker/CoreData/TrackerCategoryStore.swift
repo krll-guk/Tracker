@@ -28,7 +28,10 @@ final class TrackerCategoryStore: NSObject {
     }()
     
     convenience override init() {
-        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        guard let delegate = UIApplication.shared.delegate as? AppDelegate else {
+            fatalError("could not get app delegate")
+        }
+        let context = delegate.persistentContainer.viewContext
         try! self.init(context: context)
     }
     
@@ -49,7 +52,7 @@ final class TrackerCategoryStore: NSObject {
         guard let header = data.header else {
             throw StoreError.decodeError
         }
-        let trackers: [Tracker] = try data.trackers?.map({ try self.trackerStore.tracker(from: $0 as! TrackerCoreData) }) ?? []
+        let trackers: [Tracker] = try data.trackers?.map({ try trackerStore.tracker(from: $0) }) ?? []
         return TrackerCategory(
             header: header,
             trackers: trackers.sorted(by: { $0.name < $1.name})

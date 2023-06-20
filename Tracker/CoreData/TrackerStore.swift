@@ -6,7 +6,10 @@ final class TrackerStore: NSObject {
     private let context: NSManagedObjectContext
     
     convenience override init() {
-        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        guard let delegate = UIApplication.shared.delegate as? AppDelegate else {
+            fatalError("could not get app delegate")
+        }
+        let context = delegate.persistentContainer.viewContext
         try! self.init(context: context)
     }
     
@@ -15,7 +18,10 @@ final class TrackerStore: NSObject {
         super.init()
     }
     
-    func tracker(from data: TrackerCoreData) throws -> Tracker {
+    func tracker(from data: NSSet.Element) throws -> Tracker {
+        guard let data = data as? TrackerCoreData else {
+            throw StoreError.decodeError
+        }
         guard
             let id = data.id,
             let name = data.name,
