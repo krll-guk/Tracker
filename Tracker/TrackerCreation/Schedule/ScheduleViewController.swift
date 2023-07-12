@@ -2,7 +2,7 @@ import UIKit
 
 final class ScheduleViewController: UIViewController {
     
-    var completionHandler: (([String]) -> Void)?
+    var completionHandler: ((String) -> Void)?
     
     private let titles = Constant.scheduleVCTableTitles
     private var selectedSchedule = [Int: String]()
@@ -76,7 +76,7 @@ final class ScheduleViewController: UIViewController {
     
     @objc private func readyButtonTapped() {
         let sortedSchedule = selectedSchedule.sorted { $0.key < $1.key }
-        let schedule = Array(sortedSchedule.map({ $0.value }))
+        let schedule = Array(sortedSchedule.map({ $0.value })).joined(separator:", ")
 
         completionHandler?(schedule)
         navigationController?.popViewController(animated: true)

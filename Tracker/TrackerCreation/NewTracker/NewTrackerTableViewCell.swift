@@ -1,8 +1,8 @@
 import UIKit
 
-final class NewTrackerSettingsTableViewCell: UITableViewCell {
+final class NewTrackerTableViewCell: UITableViewCell {
     
-    static let reuseIdentifier = "NewTrackerSettingsTableViewCell"
+    static let reuseIdentifier = "NewTrackerTableViewCell"
     
     private lazy var stackView: UIStackView = {
         let stack = UIStackView()

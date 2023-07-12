@@ -1,6 +1,8 @@
 import Foundation
 
 enum Constant {
+    static let mockData = ["Дом", "Важное", "Разное"]
+    
     static let emojis: [String] = [
         "🙂", "😻", "🌺", "🐶", "❤️", "😱",
         "😇", "😡", "🥶", "🤔", "🙌", "🍔",
@@ -27,6 +29,8 @@ enum Constant {
     
     static let newEventTitle = "Новое нерегулярное событие"
     static let newEventTableTitles = ["Категория"]
+    
+    static let collectionViewTitles = ["Emoji", "Цвет"]
     
     static let textFieldPlaceholder = "Введите название трекера"
     static let errorLabel = "Ограничение 38 символов"
