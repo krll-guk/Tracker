@@ -283,12 +283,7 @@ final class NewTrackerViewController: UIViewController {
     }
     
     private func clearData() {
-        categoryName = ""
-        newTrackerName = ""
-        scheduleForTable = ""
-        schedule = ""
-        color = nil
-        emoji = nil
+        UserDefaults.standard.removeObject(forKey: "selectedCategory")
     }
     
     private func switchType() {
@@ -541,6 +536,10 @@ extension NewTrackerViewController: UITextFieldDelegate {
         hideError()
         checkCreateButton()
         return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        deactivateCreateButton()
     }
 }
 

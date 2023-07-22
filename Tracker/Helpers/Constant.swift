@@ -1,13 +1,16 @@
 import Foundation
 
 enum Constant {
-    static let mockData = ["Дом", "Важное", "Разное"]
-    
     static let emojis: [String] = [
         "🙂", "😻", "🌺", "🐶", "❤️", "😱",
         "😇", "😡", "🥶", "🤔", "🙌", "🍔",
         "🥦", "🏓", "🥇", "🎸", "🏝", "😪",
     ]
+    
+    // Onboarding
+    static let onboardingButtonTitle = "Вот это технологии!"
+    static let onboardingLabelBlue = "Отслеживайте только то, что хотите"
+    static let onboardingLabelRed = "Даже если это не литры воды и йога"
     
     // TabBar
     static let leftTabBarTitle = "Трекеры"
@@ -41,6 +44,13 @@ enum Constant {
     static let categoryVCTitle = "Категория"
     static let categoryVCButton = "Добавить категорию"
     static let categoryVCPlaceholder = "Привычки и события можно\nобъединить по смыслу"
+    static let categoryVCReuseIdentifier = "CategoryTableViewCell"
+    
+    // NewCategoryViewController
+    static let newCategoryVCTitle = "Новая категория"
+    static let newCategoryVCButton = "Готово"
+    static let newCategoryVCTextFieldPlaceholder = "Введите название категории"
+    static let newCategoryVCErrorLabel = "Такая категория уже существует"
     
     // ScheduleViewController
     static let scheduleVCTitle = "Расписание"

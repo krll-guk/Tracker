@@ -81,7 +81,6 @@ final class TrackersViewController: UIViewController {
         super.viewDidLoad()
         setupView()
         syncData()
-        addMockData()
     }
     
     private func syncData() {
@@ -90,12 +89,6 @@ final class TrackersViewController: UIViewController {
         completedTrackers = trackerRecordStore.completedTrackers
         categories = trackerCategoryStore.trackerCategories
         updateVisibleCategories()
-    }
-    
-    private func addMockData() {
-        if categories.isEmpty {
-            Constant.mockData.forEach({ try! trackerCategoryStore.addNewCategory($0) })
-        }
     }
     
     private func setupView() {
