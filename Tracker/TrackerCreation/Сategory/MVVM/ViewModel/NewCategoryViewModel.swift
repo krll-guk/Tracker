@@ -1,11 +1,7 @@
 import Foundation
 
-final class CategoryViewModel {
-    @Observable
+final class NewCategoryViewModel {
     private(set) var categories: [CategoryModel] = []
-    
-    @Observable
-    private(set) var selectedCategory: CategoryModel?
     
     private let trackerCategoryStore: TrackerCategoryStore
     
@@ -20,9 +16,10 @@ final class CategoryViewModel {
         getCategories()
     }
     
-    func selected(categoryName: String) {
-        selectedCategory = CategoryModel(categoryName: categoryName)
-        UserDefaults.standard.set(categoryName, forKey: "selectedCategory")
+    func addNewCategory(_ category: CategoryModel) {
+        do {
+            try trackerCategoryStore.addNewCategory(category)
+        } catch {}
     }
     
     private func getCategories() {
@@ -30,7 +27,7 @@ final class CategoryViewModel {
     }
 }
 
-extension CategoryViewModel: TrackerCategoryStoreDelegate {
+extension NewCategoryViewModel: TrackerCategoryStoreDelegate {
     func didUpdateCategories() {
         getCategories()
     }

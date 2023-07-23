@@ -2,7 +2,9 @@ import UIKit
 
 final class NewCategoryViewController: UIViewController {
     
-    private var viewModel: CategoryViewModel!
+    private lazy var viewModel = {
+        NewCategoryViewModel()
+    }()
 
     private var newCategory: CategoryModel?
     
@@ -67,7 +69,6 @@ final class NewCategoryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = CategoryViewModel()
         setupView()
     }
     
@@ -162,7 +163,7 @@ extension NewCategoryViewController: UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if errorLabel.isHidden != true || textField.text == "" {
+        if !errorLabel.isHidden || textField.text == "" {
             return false
         }
         textField.resignFirstResponder()

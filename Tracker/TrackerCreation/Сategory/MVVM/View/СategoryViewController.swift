@@ -4,7 +4,9 @@ final class CategoryViewController: UIViewController {
     
     var completionHandler: ((String) -> Void)?
     
-    private var viewModel: CategoryViewModel!
+    private lazy var viewModel = {
+        CategoryViewModel()
+    }()
     
     private lazy var viewNameLabel: UILabel = {
         let label = UILabel()
@@ -59,7 +61,7 @@ final class CategoryViewController: UIViewController {
         tableView.separatorColor = Color.gray
         tableView.isScrollEnabled = true
         tableView.allowsMultipleSelection = false
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: Constant.categoryVCReuseIdentifier)
+        tableView.register(CategoryTableViewCell.self, forCellReuseIdentifier: CategoryTableViewCell.reuseIdentifier)
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
@@ -68,7 +70,6 @@ final class CategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        viewModel = CategoryViewModel()
         checkPlaceholderVisibility()
         
         if let selectedCategory = UserDefaults.standard.string(forKey: "selectedCategory") {
@@ -143,16 +144,13 @@ extension CategoryViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: Constant.categoryVCReuseIdentifier,
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: CategoryTableViewCell.reuseIdentifier,
             for: indexPath
-        )
+        ) as? CategoryTableViewCell else { return UITableViewCell() }
         
-        cell.textLabel?.text = viewModel.categories[indexPath.row].categoryName
-        cell.textLabel?.font = Font.regular17
-        cell.textLabel?.textColor = Color.black
-        cell.selectionStyle = .none
-        cell.backgroundColor = Color.background
+        cell.cellViewModel = viewModel.categories[indexPath.row]
+        
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         cell.clipsToBounds = true
         cell.layer.cornerRadius = 16
