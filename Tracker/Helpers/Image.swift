@@ -10,5 +10,8 @@ enum Image {
     static let star = UIImage(named: "Star")
     static let error = UIImage(named: "Error")
     
+    static let backgroundBlue = UIImage(named: "backgroundBlue")
+    static let backgroundRed = UIImage(named: "backgroundRed")
+    
     static let chevron = UIImage(systemName: "chevron.right")?.withRenderingMode(.alwaysTemplate)
 }

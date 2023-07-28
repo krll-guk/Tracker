@@ -40,6 +40,16 @@ final class TrackerCategoryStore: NSObject {
         super.init()
     }
     
+    var isEmpty: Bool {
+        do {
+            let request = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
+            let count  = try context.count(for: request)
+            return count == 0
+        } catch {
+            return true
+        }
+    }
+    
     var trackerCategories: [TrackerCategory] {
         guard
             let objects = self.fetchedResultsController.fetchedObjects,
@@ -59,9 +69,9 @@ final class TrackerCategoryStore: NSObject {
         )
     }
     
-    func addNewCategory(_ categoryName: String) throws {
+    func addNewCategory(_ categoryName: CategoryModel) throws {
         let trackerCategoryCoreData = TrackerCategoryCoreData(context: context)
-        trackerCategoryCoreData.header = categoryName
+        trackerCategoryCoreData.header = categoryName.categoryName
         try context.save()
     }
     

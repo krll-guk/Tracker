@@ -159,6 +159,10 @@ final class NewTrackerViewController: UIViewController {
         return button
     }()
     
+    deinit {
+        clearData()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         switchType()
@@ -249,7 +253,6 @@ final class NewTrackerViewController: UIViewController {
     
     @objc
     private func cancelButtonTapped() {
-        clearData()
         navigationController?.popToRootViewController(animated: true)
     }
     
@@ -277,18 +280,11 @@ final class NewTrackerViewController: UIViewController {
         )
         
         delegate?.updateCategories(with: newTracker, categoryName)
-        
-        clearData()
         dismiss(animated: true)
     }
     
     private func clearData() {
-        categoryName = ""
-        newTrackerName = ""
-        scheduleForTable = ""
-        schedule = ""
-        color = nil
-        emoji = nil
+        UserDefaults.standard.removeObject(forKey: "selectedCategory")
     }
     
     private func switchType() {
@@ -541,6 +537,10 @@ extension NewTrackerViewController: UITextFieldDelegate {
         hideError()
         checkCreateButton()
         return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        deactivateCreateButton()
     }
 }
 
