@@ -1,0 +1,53 @@
+trackers = "Трекеры";
+statistics = "Статистика";
+
+category = "Категория";
+schedule = "Расписание";
+
+habit = "Привычка";
+event = "Нерегулярное событие";
+
+newHabit = "Новая привычка";
+newEvent = "Новое нерегулярное событие";
+newCategory = "Новая категория";
+
+emoji = "Emoji";
+color = "Цвет";
+
+monday = "Понедельник";
+tuesday = "Вторник";
+wednesday = "Среда";
+thursday = "Четверг";
+friday = "Пятница";
+saturday = "Суббота";
+sunday = "Воскресенье";
+everyDay = "Каждый день";
+
+ready = "Готово";
+search = "Поиск";
+cancel = "Отменить";
+create = "Создать";
+
+// Onboarding
+onboardingButtonTitle = "Вот это технологии!";
+onboardingLabelBlue = "Отслеживайте только то, что хотите";
+onboardingLabelRed = "Даже если это не литры воды и йога";
+
+// TrackersViewController
+trackersVCEmptyLabelText = "Что будем отслеживать?";
+trackersVCErrorLabelText = "Ничего не найдено";
+
+// TrackerCreationViewController
+trackerCreationVCTitle = "Создание трекера";
+
+// NewTrackerViewController
+textFieldPlaceholder = "Введите название трекера";
+errorLabel = "Ограничение 38 символов";
+
+// CategoryViewController
+categoryVCButton = "Добавить категорию";
+categoryVCPlaceholder = "Привычки и события можно\nобъединить по смыслу";
+
+// NewCategoryViewController
+newCategoryVCTextFieldPlaceholder = "Введите название категории";
+newCategoryVCErrorLabel = "Такая категория уже существует";

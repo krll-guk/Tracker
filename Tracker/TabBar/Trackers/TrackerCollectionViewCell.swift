@@ -134,24 +134,9 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     }
     
     private func setQuantityLabelText() {
-        switch quantity {
-        case 1:
-            quantityLabel.text = "\(quantity) \(days[1])"
-        case 2...4:
-            quantityLabel.text = "\(quantity) \(days[2])"
-        default:
-            quantityLabel.text = "\(quantity) \(days[0])"
-        }
-        
-        if quantity % 10 == 1 && !(quantity % 100 == 11) {
-            quantityLabel.text = "\(quantity) \(days[1])"
-        }
-        
-        for i in 2...4 {
-            if quantity % 10 == i && !(quantity % 100 == i + 10) {
-                quantityLabel.text = "\(quantity) \(days[2])"
-            }
-        }
+        quantityLabel.text = String.localizedStringWithFormat(
+            NSLocalizedString("numberOfDays", comment: ""), quantity
+        )
     }
     
     func set(_ model: Tracker) {
