@@ -22,7 +22,6 @@ final class CategoryViewModel {
     
     func selected(categoryName: String) {
         selectedCategory = CategoryModel(categoryName: categoryName)
-        UserDefaults.standard.set(categoryName, forKey: "selectedCategory")
     }
     
     private func getCategories() {

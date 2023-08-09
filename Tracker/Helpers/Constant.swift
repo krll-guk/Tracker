@@ -7,6 +7,16 @@ enum Constant {
         "🥦", "🏓", "🥇", "🎸", "🏝", "😪",
     ]
     
+    static let weekDays: [String: String] = [
+        "1": NSLocalizedString("mon", comment: ""),
+        "2": NSLocalizedString("tue", comment: ""),
+        "3": NSLocalizedString("wed", comment: ""),
+        "4": NSLocalizedString("thu", comment: ""),
+        "5": NSLocalizedString("fri", comment: ""),
+        "6": NSLocalizedString("sat", comment: ""),
+        "7": NSLocalizedString("sun", comment: ""),
+    ]
+    
     // Onboarding
     static let onboardingButtonTitle = NSLocalizedString("onboardingButtonTitle", comment: "")
     static let onboardingLabelBlue = NSLocalizedString("onboardingLabelBlue", comment: "")
@@ -20,6 +30,12 @@ enum Constant {
     static let trackersVCSearchBarPlaceholder = NSLocalizedString("search", comment: "")
     static let trackersVCEmptyLabelText = NSLocalizedString("trackersVCEmptyLabelText", comment: "")
     static let trackersVCErrorLabelText = NSLocalizedString("trackersVCErrorLabelText", comment: "")
+    static let trackersVCPinnedCategory = NSLocalizedString("pinned", comment: "")
+    static let trackersVCPin = NSLocalizedString("pin", comment: "")
+    static let trackersVCUnpin = NSLocalizedString("unpin", comment: "")
+    static let trackersVCDelete = NSLocalizedString("delete", comment: "")
+    static let trackersVCEdit = NSLocalizedString("edit", comment: "")
+    static let trackersVCAlertTitle = NSLocalizedString("trackersVCAlertTitle", comment: "")
     
     // TrackerCreationViewController
     static let trackerCreationVCTitle = NSLocalizedString("trackerCreationVCTitle", comment: "")
@@ -41,6 +57,8 @@ enum Constant {
     static let errorLabel = NSLocalizedString("errorLabel", comment: "")
     static let cancelButton = NSLocalizedString("cancel", comment: "")
     static let createButton = NSLocalizedString("create", comment: "")
+    static let saveButton = NSLocalizedString("save", comment: "")
+    static let editTrackerTitle = NSLocalizedString("editTrackerTitle", comment: "")
     
     // CategoryViewController
     static let categoryVCTitle = NSLocalizedString("category", comment: "")
@@ -52,7 +70,7 @@ enum Constant {
     static let newCategoryVCTitle = NSLocalizedString("newCategory", comment: "")
     static let newCategoryVCButton = NSLocalizedString("ready", comment: "")
     static let newCategoryVCTextFieldPlaceholder = NSLocalizedString("newCategoryVCTextFieldPlaceholder", comment: "")
-    static let newCategoryVCErrorLabel = NSLocalizedString("newCategoryVCTextFieldPlaceholder", comment: "")
+    static let newCategoryVCErrorLabel = NSLocalizedString("newCategoryVCErrorLabel", comment: "")
     
     // ScheduleViewController
     static let scheduleVCTitle = NSLocalizedString("schedule", comment: "")

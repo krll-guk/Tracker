@@ -4,6 +4,7 @@ final class TrackersViewController: UIViewController {
     
     private let trackerCategoryStore = TrackerCategoryStore()
     private let trackerRecordStore = TrackerRecordStore()
+    private let trackerStore = TrackerStore()
 
     private var categories: [TrackerCategory] = []
     private var visibleCategories: [TrackerCategory] = []
@@ -154,17 +155,27 @@ final class TrackersViewController: UIViewController {
     
     @objc
     private func updateVisibleCategories() {
-        weekDayString = AppDateFormatter.shared.weekDayString(from: datePicker.date)
+        let weekDay = Int(AppDateFormatter.shared.weekDayString(from: datePicker.date)) ?? 0
+        if weekDay == 1 {
+            self.weekDayString = "7"
+        } else {
+            self.weekDayString = String(weekDay - 1)
+        }
         datePickerDateString = AppDateFormatter.shared.dateString(from: datePicker.date)
         currentDateString = AppDateFormatter.shared.dateString(from: Date())
         
         visibleCategories = []
         var trackers: [Tracker] = []
+        var pinnedTrackers: [Tracker] = []
         
         for category in categories {
             for tracker in category.trackers {
-                if tracker.schedule.contains(weekDayString) || tracker.schedule.contains(datePickerDateString) {
-                    trackers.append(tracker)
+                if tracker.schedule.contains(weekDayString) || tracker.date == datePickerDateString {
+                    if tracker.pinned {
+                        pinnedTrackers.append(tracker)
+                    } else {
+                        trackers.append(tracker)
+                    }
                 }
             }
             
@@ -174,6 +185,12 @@ final class TrackersViewController: UIViewController {
             }
             
             trackers = []
+        }
+        
+        if !pinnedTrackers.isEmpty {
+            let pinedCategory = TrackerCategory(header: Constant.trackersVCPinnedCategory, trackers: pinnedTrackers.sorted(by: { $0.name < $1.name }))
+            visibleCategories.insert(pinedCategory, at: 0)
+            pinnedTrackers = []
         }
         
         visibleCategoriesForSearch = visibleCategories
@@ -201,7 +218,12 @@ extension TrackersViewController: TrackerRecordStoreDelegate {
 
 extension TrackersViewController: NewTrackerViewControllerDelegate {
     func updateCategories(with newTracker: Tracker, _ categoryName: String) {
-        try! trackerCategoryStore.addNewTracker(newTracker, to: categoryName)
+        try? trackerCategoryStore.addNewTracker(newTracker, to: categoryName)
+        updateVisibleCategories()
+    }
+    
+    func changeTracker(_ tracker: Tracker, _ categoryName: String) {
+        try? trackerStore.changeTracker(tracker, categoryName)
         updateVisibleCategories()
     }
     
@@ -219,9 +241,9 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
         
         switch sender {
         case true:
-            try! trackerRecordStore.addRecord(newRecord)
+            try? trackerRecordStore.addRecord(newRecord)
         case false:
-            try! trackerRecordStore.removeRecord(newRecord)
+            try? trackerRecordStore.removeRecord(newRecord)
         }
     }
 }
@@ -236,39 +258,35 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
+        guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: TrackerCollectionViewCell.reuseIdentifier,
             for: indexPath
-        ) as! TrackerCollectionViewCell
+        ) as? TrackerCollectionViewCell else { return UICollectionViewCell() }
         
         cell.delegate = self
         
-        cell.set(visibleCategories[indexPath.section].trackers[indexPath.row])
-        
-        let id = visibleCategories[indexPath.section].trackers[indexPath.row].id
+        let tracker = visibleCategories[indexPath.section].trackers[indexPath.row]
+
+        cell.set(tracker)
         
         if completedTrackers.contains(where: {
-            $0.id == id &&
+            $0.id == tracker.id &&
             $0.date == datePickerDateString })
         {
             cell.trackerIsCompleted(true)
         } else {
             cell.trackerIsCompleted(false)
         }
+
+        cell.setQuantity(quantity(tracker))
         
-        var quantity = 0
-        completedTrackers.forEach({
-            if $0.id == id {
-                quantity += 1
-            }
-        })
-        cell.setQuantity(quantity)
-        
-        if datePickerDateString > currentDateString {
+        if datePickerDateString > currentDateString || !tracker.schedule.contains(weekDayString) && tracker.date != datePickerDateString {
             cell.buttonIsEnabled(false)
         } else {
             cell.buttonIsEnabled(true)
         }
+        
+        cell.pinned(tracker.pinned)
         
         return cell
     }
@@ -283,12 +301,125 @@ extension TrackersViewController: UICollectionViewDataSource {
             id = ""
         }
         
-        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as! TrackerSupplementaryView
+        guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? TrackerSupplementaryView else { return UICollectionReusableView() }
         
         let title = visibleCategories[indexPath.section].header
         view.setTitle(title)
         
         return view
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let identifier = NSString(string: "\(indexPath.row):\(indexPath.section)")
+        
+        let pined = visibleCategories[indexPath.section].trackers[indexPath.row].pinned
+        let pinTitle = pined ? Constant.trackersVCUnpin : Constant.trackersVCPin
+        
+        return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil) { _ in
+            let pin = UIAction(title: pinTitle) { [weak self] _ in
+                guard let self = self else { return }
+                self.pin(indexPath)
+            }
+            
+            let edit = UIAction(title: Constant.trackersVCEdit) { [weak self] _ in
+                guard let self = self else { return }
+                self.edit(indexPath)
+            }
+            
+            let delete = UIAction(title: Constant.trackersVCDelete, attributes: .destructive) { [weak self] _ in
+                guard let self = self else { return }
+                self.alert(indexPath)
+            }
+            
+            return UIMenu(title: "", children: [pin, edit, delete])
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        makePreview(collectionView, configuration)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        makePreview(collectionView, configuration)
+    }
+    
+    private func alert(_ indexPath: IndexPath) {
+        let alert = UIAlertController(
+            title: Constant.trackersVCAlertTitle,
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        
+        let delete = UIAlertAction(title: Constant.trackersVCDelete, style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            self.deleteTracker(indexPath)
+        }
+        
+        let cancel = UIAlertAction(title: Constant.cancelButton, style: .cancel)
+        
+        alert.addAction(delete)
+        alert.addAction(cancel)
+        
+        present(alert, animated: true)
+    }
+    
+    private func makePreview(_ collectionView: UICollectionView, _ configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        guard let identifier = configuration.identifier as? String else { return nil }
+        let components = identifier.components(separatedBy: ":")
+        guard
+            let rowString = components.first,
+            let sectionString = components.last,
+            let row = Int(rowString),
+            let section = Int(sectionString)
+        else { return nil }
+        let indexPath = IndexPath(row: row, section: section)
+        guard let cell = collectionView.cellForItem(at: indexPath) as? TrackerCollectionViewCell else { return nil }
+        return UITargetedPreview(view: cell.menu)
+    }
+    
+    private func pin(_ indexPath: IndexPath) {
+        let tracker = visibleCategories[indexPath.section].trackers[indexPath.row]
+        try? trackerStore.pined(tracker)
+        didUpdateCategories()
+        updateVisibleCategories()
+    }
+    
+    private func edit(_ indexPath: IndexPath) {
+        var tracker = visibleCategories[indexPath.section].trackers[indexPath.row]
+        guard let header = categories.first(where: { $0.trackers.contains(where: {$0.id == tracker.id}) })?.header else { return }
+        
+        tracker.quantity = quantity(tracker)
+        
+        let pickedTracker = TrackerCategory(header: header, trackers: [tracker])
+        
+        let trackerType: TrackerType
+        if !tracker.date.isEmpty {
+            trackerType = .event
+        } else {
+            trackerType = .habit
+        }
+        
+        let vc = NewTrackerViewController(pickedTracker, trackerType)
+        vc.delegate = self
+        let navigationController = UINavigationController(rootViewController: vc)
+        present(navigationController, animated: true)
+    }
+    
+    private func deleteTracker(_ indexPath: IndexPath) {
+        let tracker = visibleCategories[indexPath.section].trackers[indexPath.row]
+        try? trackerStore.deleteTracker(tracker)
+        didUpdateCategories()
+        updateVisibleCategories()
+    }
+    
+    private func quantity(_ tracker: Tracker) -> Int {
+        var quantity = 0
+        completedTrackers.forEach({
+            if $0.id == tracker.id {
+                quantity += 1
+            }
+        })
+        return quantity
     }
 }
 

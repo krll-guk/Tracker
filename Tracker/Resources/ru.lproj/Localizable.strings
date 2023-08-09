@@ -1,6 +1,11 @@
 trackers = "Трекеры";
 statistics = "Статистика";
 
+pinned = "Закрепленные";
+pin = "Закрепить";
+unpin = "Открепить";
+
+
 category = "Категория";
 schedule = "Расписание";
 
@@ -23,10 +28,21 @@ saturday = "Суббота";
 sunday = "Воскресенье";
 everyDay = "Каждый день";
 
+mon = "Пн";
+tue = "Вт";
+wed = "Ср";
+thu = "Чт";
+fri = "Пт";
+sat = "Сб";
+sun = "Вс";
+
 ready = "Готово";
 search = "Поиск";
 cancel = "Отменить";
 create = "Создать";
+delete = "Удалить";
+edit = "Редактировать";
+save = "Сохранить";
 
 // Onboarding
 onboardingButtonTitle = "Вот это технологии!";
@@ -36,6 +52,7 @@ onboardingLabelRed = "Даже если это не литры воды и йо�
 // TrackersViewController
 trackersVCEmptyLabelText = "Что будем отслеживать?";
 trackersVCErrorLabelText = "Ничего не найдено";
+trackersVCAlertTitle = "Уверены что хотите удалить трекер?";
 
 // TrackerCreationViewController
 trackerCreationVCTitle = "Создание трекера";
@@ -43,6 +60,7 @@ trackerCreationVCTitle = "Создание трекера";
 // NewTrackerViewController
 textFieldPlaceholder = "Введите название трекера";
 errorLabel = "Ограничение 38 символов";
+editTrackerTitle = "Редактирование трекера";
 
 // CategoryViewController
 categoryVCButton = "Добавить категорию";

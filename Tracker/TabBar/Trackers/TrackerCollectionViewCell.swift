@@ -10,8 +10,20 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     weak var delegate: TrackerCollectionViewCellDelegate?
     
-    private var days: [String] = ["дней", "день", "дня"]
     private var quantity: Int = 0
+    
+    var menu: UIView {
+        return colorView
+    }
+    
+    private lazy var pinImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = Image.pin
+        imageView.tintColor = .white
+        imageView.contentMode = .center
+        imageView.isHidden = true
+        return imageView
+    }()
     
     private lazy var colorView: UIView = {
         let view = UIView()
@@ -42,7 +54,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         button.layer.cornerRadius = 17
         button.setPreferredSymbolConfiguration((.init(pointSize: 12)), forImageIn: .normal)
-        button.tintColor = .white
+        button.tintColor = Color.white
         button.addTarget(self, action: #selector(quantityButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -66,7 +78,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     private func setupView() {
         contentView.backgroundColor = .clear
         
-        [colorView, emojiLabel, nameLabel, quantityButton, quantityLabel].forEach {
+        [colorView, emojiLabel, nameLabel, quantityButton, quantityLabel, pinImageView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         
@@ -74,7 +86,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             contentView.addSubview($0)
         }
         
-        [emojiLabel, nameLabel].forEach {
+        [emojiLabel, nameLabel, pinImageView].forEach {
             colorView.addSubview($0)
         }
         
@@ -110,6 +122,12 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             quantityLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             quantityLabel.trailingAnchor.constraint(equalTo: quantityButton.leadingAnchor, constant: -8),
             quantityLabel.centerYAnchor.constraint(equalTo: quantityButton.centerYAnchor),
+            
+            //pinedImageView
+            pinImageView.topAnchor.constraint(equalTo: colorView.topAnchor, constant: 12),
+            pinImageView.trailingAnchor.constraint(equalTo: colorView.trailingAnchor, constant: -4),
+            pinImageView.heightAnchor.constraint(equalToConstant: 24),
+            pinImageView.widthAnchor.constraint(equalToConstant: 24),
         ])
     }
     
@@ -172,5 +190,9 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     func setQuantity(_ sender: Int) {
         quantity = sender
         setQuantityLabelText()
+    }
+    
+    func pinned(_ sender: Bool) {
+        pinImageView.isHidden = !sender
     }
 }

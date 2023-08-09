@@ -14,4 +14,6 @@ enum Image {
     static let backgroundRed = UIImage(named: "backgroundRed")
     
     static let chevron = UIImage(systemName: "chevron.right")?.withRenderingMode(.alwaysTemplate)
+    
+    static let pin = UIImage(named: "pin")?.withRenderingMode(.alwaysTemplate)
 }

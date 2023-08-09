@@ -2,10 +2,10 @@ import UIKit
 
 final class ScheduleViewController: UIViewController {
     
-    var completionHandler: ((String) -> Void)?
+    var completionHandler: (([String: String]) -> Void)?
     
     private let titles = Constant.scheduleVCTableTitles
-    private var selectedSchedule = [Int: String]()
+    private var selectedSchedule = [String: String]()
     
     private lazy var viewNameLabel: UILabel = {
         let label = UILabel()
@@ -36,6 +36,15 @@ final class ScheduleViewController: UIViewController {
         button.addTarget(self, action: #selector(readyButtonTapped), for: .touchUpInside)
         return button
     }()
+    
+    init(_ selectedSchedule: [String: String]) {
+        self.selectedSchedule = selectedSchedule
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,11 +83,9 @@ final class ScheduleViewController: UIViewController {
         ])
     }
     
-    @objc private func readyButtonTapped() {
-        let sortedSchedule = selectedSchedule.sorted { $0.key < $1.key }
-        let schedule = Array(sortedSchedule.map({ $0.value })).joined(separator:", ")
-
-        completionHandler?(schedule)
+    @objc
+    private func readyButtonTapped() {
+        completionHandler?(selectedSchedule)
         navigationController?.popViewController(animated: true)
     }
 }
@@ -111,18 +118,26 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     private func addSwitchView(cell: UITableViewCell, indexPath: IndexPath) {
         let switchView = UISwitch(frame: .zero)
         switchView.onTintColor = Color.blue
-        switchView.setOn(false, animated: true)
+        switchView.setOn(false, animated: false)
         switchView.tag = indexPath.row
         switchView.addTarget(self, action: #selector(self.switchChanged), for: .valueChanged)
         cell.accessoryView = switchView
+        
+        for (index, _) in selectedSchedule {
+            let intIndex = Int(index) ?? 0
+            if switchView.tag == intIndex - 1 {
+                switchView.setOn(true, animated: false)
+            }
+        }
     }
     
     @objc
     private func switchChanged(_ sender: UISwitch!) {
-        for (index, weekday) in WeekDay.allCases.enumerated() {
-            if sender.tag == index {
+        for (index, weekday) in Constant.weekDays {
+            let intIndex = Int(index) ?? 0
+            if sender.tag == intIndex - 1 {
                 if sender.isOn {
-                    selectedSchedule.updateValue(weekday.rawValue, forKey: index)
+                    selectedSchedule.updateValue(weekday, forKey: index)
                 } else {
                     selectedSchedule.removeValue(forKey: index)
                 }

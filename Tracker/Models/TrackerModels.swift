@@ -6,6 +6,9 @@ struct Tracker {
     let color: UIColor
     let emoji: String
     let schedule: String
+    let date: String
+    let pinned: Bool
+    var quantity = 0
 }
 
 struct TrackerCategory {
@@ -16,16 +19,6 @@ struct TrackerCategory {
 struct TrackerRecord: Hashable {
     let id: UUID
     let date: String
-}
-
-enum WeekDay: String, CaseIterable {
-    case Monday = "Пн"
-    case Tuesday = "Вт"
-    case Wednesday = "Ср"
-    case Thursday = "Чт"
-    case Friday = "Пт"
-    case Saturday = "Сб"
-    case Sunday = "Вс"
 }
 
 enum TrackerType {
