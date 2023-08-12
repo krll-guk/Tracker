@@ -26,6 +26,13 @@ enum TrackerType {
     case event
 }
 
+enum Filter {
+    case todayTrackers
+    case allTrackers
+    case completed
+    case uncompleted
+}
+
 enum StoreError: Error {
     case decodeError
 }

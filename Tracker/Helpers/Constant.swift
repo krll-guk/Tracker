@@ -37,6 +37,17 @@ enum Constant {
     static let trackersVCEdit = NSLocalizedString("edit", comment: "")
     static let trackersVCAlertTitle = NSLocalizedString("trackersVCAlertTitle", comment: "")
     
+    // FiltersViewController
+    static let filtersVCTitle = NSLocalizedString("filters", comment: "")
+    static let filtersVCTableTitles = [NSLocalizedString("allTrackers", comment: ""),
+                                       NSLocalizedString("todayTrackers", comment: ""),
+                                       NSLocalizedString("completed", comment: ""),
+                                       NSLocalizedString("uncompleted", comment: "")]
+    
+    // StatisticsViewController
+    static let statisticsVCPlaceholder = NSLocalizedString("statisticsVCPlaceholder", comment: "")
+    static let statisticsVCCard = NSLocalizedString("statisticsVCCard", comment: "")
+    
     // TrackerCreationViewController
     static let trackerCreationVCTitle = NSLocalizedString("trackerCreationVCTitle", comment: "")
     static let trackerCreationVCHabitButton = NSLocalizedString("habit", comment: "")

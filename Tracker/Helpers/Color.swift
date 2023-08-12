@@ -1,6 +1,12 @@
 import UIKit
 
 enum Color {
+    static let gradientColors = [
+        UIColor(named: "GradientRed")?.cgColor,
+        UIColor(named: "GradientGreen")?.cgColor,
+        UIColor(named: "GradientBlue")?.cgColor,
+    ]
+    
     static let colorSelectionArray = (1...18).map({ UIColor(named: String($0)) })
     
     static let black = UIColor(named: "Black")

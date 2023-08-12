@@ -5,6 +5,7 @@ pinned = "Pinned";
 pin = "Pin";
 unpin = "Unpin";
 
+filters = "Filters";
 category = "Category";
 schedule = "Schedule";
 
@@ -17,6 +18,11 @@ newCategory = "New category";
 
 emoji = "Emoji";
 color = "Color";
+
+allTrackers = "All trackers";
+todayTrackers = "Trackers for today";
+completed = "Completed";
+uncompleted = "Uncompleted";
 
 monday = "Monday";
 tuesday = "Tuesday";
@@ -52,6 +58,10 @@ onboardingLabelRed = "Even if it's not liters of water and yoga";
 trackersVCEmptyLabelText = "What will we track?";
 trackersVCErrorLabelText = "Nothing found";
 trackersVCAlertTitle = "Are you sure you want to delete the tracker?";
+
+// StatisticsViewController
+statisticsVCPlaceholder = "There is nothing to analyze";
+statisticsVCCard = "Trackers completed";
 
 // TrackerCreationViewController
 trackerCreationVCTitle = "Tracker creation";

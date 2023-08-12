@@ -286,7 +286,12 @@ final class NewTrackerViewController: UIViewController {
             selectedSchedule = Constant.weekDays.filter({ schedule.contains($0.key) })
             
             let sortedSchedule = Constant.weekDays.filter({ schedule.contains($0.key) }).sorted(by: { $0.key < $1.key })
-            scheduleForTable = sortedSchedule.map({ $0.value }).joined(separator: ", ")
+            
+            if sortedSchedule.count == 7 {
+                scheduleForTable = Constant.scheduleVCEverydayDescription
+            } else {
+                scheduleForTable = Array(sortedSchedule.map({ $0.value })).joined(separator:", ")
+            }
             
             viewNameLabel.text = Constant.editTrackerTitle
             createButton.setTitle(Constant.saveButton, for: .normal)
