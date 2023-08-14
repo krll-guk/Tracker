@@ -5,6 +5,7 @@ final class TrackersViewController: UIViewController {
     private let trackerCategoryStore = TrackerCategoryStore()
     private let trackerRecordStore = TrackerRecordStore()
     private let trackerStore = TrackerStore()
+    private let analyticsService = AnalyticsService()
 
     private var categories: [TrackerCategory] = []
     private var visibleCategories: [TrackerCategory] = []
@@ -97,6 +98,16 @@ final class TrackersViewController: UIViewController {
         syncData()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        analyticsService.report(event: .open, params: ["screen": "Main"])
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        analyticsService.report(event: .close, params: ["screen": "Main"])
+    }
+    
     private func syncData() {
         trackerCategoryStore.delegate = self
         trackerRecordStore.delegate = self
@@ -162,6 +173,7 @@ final class TrackersViewController: UIViewController {
     
     @objc
     private func addButtonTapped() {
+        analyticsService.report(event: .click, params: ["screen": "Main", "item": Items.add_track.rawValue])
         let vc = TrackerCreationViewController()
         vc.delegate = self
         let navigationController = UINavigationController(rootViewController: vc)
@@ -170,6 +182,7 @@ final class TrackersViewController: UIViewController {
     
     @objc
     private func filterButtonTapped() {
+        analyticsService.report(event: .click, params: ["screen": "Main", "item": Items.filter.rawValue])
         let vc = FiltersViewController(filter)
         vc.completionHandler = { [weak self] filter in
             guard let self = self else { return }
@@ -463,11 +476,13 @@ extension TrackersViewController: UICollectionViewDataSource {
             
             let edit = UIAction(title: Constant.trackersVCEdit) { [weak self] _ in
                 guard let self = self else { return }
+                self.analyticsService.report(event: .click, params: ["screen": "Main", "item": Items.edit.rawValue])
                 self.edit(indexPath)
             }
             
             let delete = UIAction(title: Constant.trackersVCDelete, attributes: .destructive) { [weak self] _ in
                 guard let self = self else { return }
+                self.analyticsService.report(event: .click, params: ["screen": "Main", "item": Items.delete.rawValue])
                 self.alert(indexPath)
             }
             

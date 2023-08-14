@@ -6,6 +6,8 @@ protocol TrackerCollectionViewCellDelegate: AnyObject {
 
 final class TrackerCollectionViewCell: UICollectionViewCell {
     
+    private let analyticsService = AnalyticsService()
+    
     static let reuseIdentifier = "TrackerCollectionViewCell"
     
     weak var delegate: TrackerCollectionViewCellDelegate?
@@ -133,6 +135,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     @objc
     private func quantityButtonTapped() {
+        analyticsService.report(event: .click, params: ["screen": "Main", "item": Items.track.rawValue])
         switch quantityButton.currentImage {
         case Image.plus:
             trackerIsCompleted(true)
