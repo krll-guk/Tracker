@@ -79,14 +79,14 @@ final class TrackerCreationViewController: UIViewController {
     
     @objc
     private func habitButtonTapped() {
-        let vc = NewTrackerViewController(.habit)
+        let vc = NewTrackerViewController(nil, .habit)
         vc.delegate = self
         navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc
     private func eventButtonTapped() {
-        let vc = NewTrackerViewController(.event)
+        let vc = NewTrackerViewController(nil, .event)
         vc.delegate = self
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -95,6 +95,10 @@ final class TrackerCreationViewController: UIViewController {
 extension TrackerCreationViewController: NewTrackerViewControllerDelegate{
     func updateCategories(with newTracker: Tracker, _ categoryName: String) {
         delegate?.updateCategories(with: newTracker, categoryName)
+    }
+    
+    func changeTracker(_ tracker: Tracker, _ categoryName: String) {
+        delegate?.changeTracker(tracker, categoryName)
     }
     
     func setDateForNewEvent() -> String {

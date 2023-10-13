@@ -12,6 +12,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .foregroundColor : Color.black ?? .black,
             .font : Font.bold34
         ]
+        AnalyticsService.activate()
         return true
     }
     

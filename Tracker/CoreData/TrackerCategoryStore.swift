@@ -81,6 +81,12 @@ final class TrackerCategoryStore: NSObject {
         category?.addToTrackers(tracker)
         try context.save()
     }
+    
+    func category(_ categoryName: String) -> TrackerCategoryCoreData? {
+        return fetchedResultsController.fetchedObjects?.first {
+            $0.header == categoryName
+        }
+    }
 }
 
 extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {

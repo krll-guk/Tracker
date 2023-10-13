@@ -69,6 +69,7 @@ final class NewCategoryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        hideKeyboardWhenTappedAround()
         setupView()
     }
     
@@ -143,10 +144,9 @@ extension NewCategoryViewController: UITextFieldDelegate {
             if category.categoryName.lowercased() == newString.lowercased() {
                 showError()
                 return true
-            } else {
-                hideError()
             }
         }
+        hideError()
         
         return true
     }
@@ -155,20 +155,21 @@ extension NewCategoryViewController: UITextFieldDelegate {
         deactivateCreateButton()
     }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if errorLabel.isHidden && textField.text != "" {
+            newCategory = CategoryModel(categoryName: textField.text ?? "")
+            activateCreateButton()
+        }
+    }
+    
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         newCategory = nil
         hideError()
-        deactivateCreateButton()
         return true
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if !errorLabel.isHidden || textField.text == "" {
-            return false
-        }
         textField.resignFirstResponder()
-        newCategory = CategoryModel(categoryName: textField.text ?? "")
-        activateCreateButton()
         return true
     }
 }

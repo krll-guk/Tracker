@@ -11,7 +11,7 @@ final class AppDateFormatter {
 
     private lazy var dateFormatterWeekDay: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "EE"
+        formatter.dateFormat = "e"
         return formatter
     }()
 

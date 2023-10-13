@@ -1,0 +1,80 @@
+trackers = "Трекеры";
+statistics = "Статистика";
+
+pinned = "Закрепленные";
+pin = "Закрепить";
+unpin = "Открепить";
+
+filters = "Фильтры";
+category = "Категория";
+schedule = "Расписание";
+
+habit = "Привычка";
+event = "Нерегулярное событие";
+
+newHabit = "Новая привычка";
+newEvent = "Новое нерегулярное событие";
+newCategory = "Новая категория";
+
+emoji = "Emoji";
+color = "Цвет";
+
+allTrackers = "Все трекеры";
+todayTrackers = "Трекеры на сегодня";
+completed = "Завершенные";
+uncompleted = "Не завершенные";
+
+monday = "Понедельник";
+tuesday = "Вторник";
+wednesday = "Среда";
+thursday = "Четверг";
+friday = "Пятница";
+saturday = "Суббота";
+sunday = "Воскресенье";
+everyDay = "Каждый день";
+
+mon = "Пн";
+tue = "Вт";
+wed = "Ср";
+thu = "Чт";
+fri = "Пт";
+sat = "Сб";
+sun = "Вс";
+
+ready = "Готово";
+search = "Поиск";
+cancel = "Отменить";
+create = "Создать";
+delete = "Удалить";
+edit = "Редактировать";
+save = "Сохранить";
+
+// Onboarding
+onboardingButtonTitle = "Вот это технологии!";
+onboardingLabelBlue = "Отслеживайте только то, что хотите";
+onboardingLabelRed = "Даже если это не литры воды и йога";
+
+// TrackersViewController
+trackersVCEmptyLabelText = "Что будем отслеживать?";
+trackersVCErrorLabelText = "Ничего не найдено";
+trackersVCAlertTitle = "Уверены что хотите удалить трекер?";
+
+// StatisticsViewController
+statisticsVCPlaceholder = "Анализировать пока нечего";
+statisticsVCCard = "Трекеров завершено";
+
+// TrackerCreationViewController
+trackerCreationVCTitle = "Создание трекера";
+
+// NewTrackerViewController
+textFieldPlaceholder = "Введите название трекера";
+errorLabel = "Ограничение 38 символов";
+editTrackerTitle = "Редактирование трекера";
+
+// CategoryViewController
+categoryVCButton = "Добавить категорию";
+categoryVCPlaceholder = "Привычки и события можно\nобъединить по смыслу";
+
+// NewCategoryViewController
+newCategoryVCTextFieldPlaceholder = "Введите название категории";
+newCategoryVCErrorLabel = "Такая категория уже существует";

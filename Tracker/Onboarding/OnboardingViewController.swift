@@ -15,6 +15,7 @@ final class OnboardingViewController: UIPageViewController {
         vc.view.addSubview(imageView)
         vc.view.addSubview(labelBlue)
         vc.view.sendSubviewToBack(imageView)
+        vc.overrideUserInterfaceStyle = .light
         return vc
     }()
     
@@ -28,6 +29,7 @@ final class OnboardingViewController: UIPageViewController {
         vc.view.addSubview(imageView)
         vc.view.addSubview(labelRed)
         vc.view.sendSubviewToBack(imageView)
+        vc.overrideUserInterfaceStyle = .light
         return vc
     }()
     
@@ -89,6 +91,7 @@ final class OnboardingViewController: UIPageViewController {
     }
     
     private func setupView() {
+        view.overrideUserInterfaceStyle = .light
         [pageControl, enterButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)

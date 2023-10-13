@@ -3,6 +3,7 @@ import UIKit
 protocol NewTrackerViewControllerDelegate: AnyObject {
     func setDateForNewEvent() -> String
     func updateCategories(with newTracker: Tracker, _ categoryName: String)
+    func changeTracker(_ tracker: Tracker, _ categoryName: String)
 }
 
 final class NewTrackerViewController: UIViewController {
@@ -10,6 +11,10 @@ final class NewTrackerViewController: UIViewController {
     public weak var delegate: NewTrackerViewControllerDelegate?
     
     private let trackerType: TrackerType
+    private let pickedTracker: TrackerCategory?
+    private let uiColorMarshalling = UIColorMarshalling()
+    
+    private var selectedSchedule: [String: String] = [:]
     
     private var tableTitles: [String] = []
     private var scheduleForTable: String = ""
@@ -20,8 +25,11 @@ final class NewTrackerViewController: UIViewController {
     private var schedule: String = ""
     private var color: UIColor?
     private var emoji: String?
+    private var date: String?
+    private var id: UUID?
     
-    init(_ trackerType: TrackerType) {
+    init(_ pickedTracker: TrackerCategory?, _ trackerType: TrackerType) {
+        self.pickedTracker = pickedTracker
         self.trackerType = trackerType
         super.init(nibName: nil, bundle: nil)
     }
@@ -34,6 +42,15 @@ final class NewTrackerViewController: UIViewController {
         let label = UILabel()
         label.font = Font.medium16
         label.textColor = Color.black
+        return label
+    }()
+    
+    private lazy var daysLabel: UILabel = {
+        let label = UILabel()
+        label.font = Font.bold32
+        label.textColor = Color.black
+        label.textAlignment = .center
+        label.isHidden = true
         return label
     }()
     
@@ -53,8 +70,10 @@ final class NewTrackerViewController: UIViewController {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.alignment = .center
+        stack.addArrangedSubview(daysLabel)
         stack.addArrangedSubview(textField)
         stack.addArrangedSubview(errorLabel)
+        stack.setCustomSpacing(40, after: daysLabel)
         return stack
     }()
     
@@ -159,13 +178,11 @@ final class NewTrackerViewController: UIViewController {
         return button
     }()
     
-    deinit {
-        clearData()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        hideKeyboardWhenTappedAround()
         switchType()
+        checkPickedTracker()
         setupView()
     }
     
@@ -176,6 +193,7 @@ final class NewTrackerViewController: UIViewController {
     }
     
     private func setupView() {
+        navigationController?.isNavigationBarHidden = true
         view.backgroundColor = Color.white
         
         [viewNameLabel, scrollView, buttonsStackView].forEach {
@@ -228,6 +246,9 @@ final class NewTrackerViewController: UIViewController {
             stackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
             stackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
             
+            //daysLabel
+            daysLabel.heightAnchor.constraint(equalToConstant: 38),
+            
             // textField
             textField.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
             textField.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
@@ -251,40 +272,91 @@ final class NewTrackerViewController: UIViewController {
         ])
     }
     
+    private func checkPickedTracker() {
+        if let pickedTracker = pickedTracker {
+            guard let tracker = pickedTracker.trackers.first else { return }
+            id = tracker.id
+            textField.text = tracker.name
+            newTrackerName = tracker.name
+            categoryName = pickedTracker.header
+            color = tracker.color
+            emoji = tracker.emoji
+            schedule = tracker.schedule
+            date = tracker.date
+            selectedSchedule = Constant.weekDays.filter({ schedule.contains($0.key) })
+            
+            let sortedSchedule = Constant.weekDays.filter({ schedule.contains($0.key) }).sorted(by: { $0.key < $1.key })
+            
+            if sortedSchedule.count == 7 {
+                scheduleForTable = Constant.scheduleVCEverydayDescription
+            } else {
+                scheduleForTable = Array(sortedSchedule.map({ $0.value })).joined(separator:", ")
+            }
+            
+            viewNameLabel.text = Constant.editTrackerTitle
+            createButton.setTitle(Constant.saveButton, for: .normal)
+            
+            daysLabel.isHidden = false
+            daysLabel.text = String.localizedStringWithFormat(
+                NSLocalizedString("numberOfDays", comment: ""), tracker.quantity
+            )
+        }
+    }
+    
     @objc
     private func cancelButtonTapped() {
-        navigationController?.popToRootViewController(animated: true)
+        if pickedTracker == nil {
+            navigationController?.popToRootViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
     
     @objc
     private func createButtonTapped() {
-        guard let color = self.color else { return }
-        guard let emoji = self.emoji else { return }
-        guard let date = delegate?.setDateForNewEvent() else { return }
+        if pickedTracker == nil {
+            self.date = delegate?.setDateForNewEvent()
+            self.id = UUID()
+        }
         
-        let newTrackerSchedule: String
+        guard
+            let color = self.color,
+            let emoji = self.emoji,
+            let date = self.date,
+            let id = self.id
+        else { return }
+        
+        let newTracker: Tracker
         
         switch trackerType {
         case .habit:
-            newTrackerSchedule = self.schedule
+            newTracker = Tracker(
+                id: id,
+                name: newTrackerName,
+                color: color,
+                emoji: emoji,
+                schedule: schedule,
+                date: "",
+                pinned: false
+            )
         case .event:
-            newTrackerSchedule = date
+            newTracker = Tracker(
+                id: id,
+                name: newTrackerName,
+                color: color,
+                emoji: emoji,
+                schedule: "",
+                date: date,
+                pinned: false
+            )
         }
         
-        let newTracker = Tracker(
-            id: UUID(),
-            name: newTrackerName,
-            color: color,
-            emoji: emoji,
-            schedule: newTrackerSchedule
-        )
-        
-        delegate?.updateCategories(with: newTracker, categoryName)
+        if pickedTracker == nil {
+            delegate?.updateCategories(with: newTracker, categoryName)
+        } else {
+            delegate?.changeTracker(newTracker, categoryName)
+        }
         dismiss(animated: true)
-    }
-    
-    private func clearData() {
-        UserDefaults.standard.removeObject(forKey: "selectedCategory")
     }
     
     private func switchType() {
@@ -365,7 +437,7 @@ extension NewTrackerViewController: UITableViewDataSource, UITableViewDelegate {
         switch indexPath.row {
         case 0:
             deactivateCreateButton()
-            let vc = CategoryViewController()
+            let vc = CategoryViewController(categoryName)
             vc.completionHandler = { [weak self] category in
                 guard let self = self else { return }
                 self.categoryName = category
@@ -373,15 +445,18 @@ extension NewTrackerViewController: UITableViewDataSource, UITableViewDelegate {
             navigationController?.pushViewController(vc, animated: true)
         case 1:
             deactivateCreateButton()
-            let vc = ScheduleViewController()
-            vc.completionHandler = { [weak self] schedule in
+            let vc = ScheduleViewController(selectedSchedule)
+            vc.completionHandler = { [weak self] pickedSchedule in
                 guard let self = self else { return }
-                self.schedule = schedule
+                self.selectedSchedule = pickedSchedule
                 
-                if schedule.count == 26 {
+                let sortedSchedule = Array(pickedSchedule.sorted { $0.key < $1.key })
+                self.schedule = Array(sortedSchedule.map({ $0.key })).joined(separator:", ")
+                
+                if sortedSchedule.count == 7 {
                     self.scheduleForTable = Constant.scheduleVCEverydayDescription
                 } else {
-                    self.scheduleForTable = self.schedule
+                    self.scheduleForTable = Array(sortedSchedule.map({ $0.value })).joined(separator:", ")
                 }
             }
             navigationController?.pushViewController(vc, animated: true)
@@ -408,16 +483,27 @@ extension NewTrackerViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
+        guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: NewTrackerCollectionViewCell.reuseIdentifier,
             for: indexPath
-        ) as! NewTrackerCollectionViewCell
+        ) as? NewTrackerCollectionViewCell else { return UICollectionViewCell() }
         
         switch indexPath.section {
         case 0:
             cell.setEmoji(Constant.emojis[indexPath.row])
+            if emoji == Constant.emojis[indexPath.row] {
+                collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .top)
+            }
+        case 1:
+            guard let color = Color.colorSelectionArray[indexPath.row] else { break }
+            cell.setColor(color)
+            
+            guard let pickedColor = self.color else { break }
+            if uiColorMarshalling.hexString(from: pickedColor) == uiColorMarshalling.hexString(from: color) {
+                collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .top)
+            }
         default:
-            cell.setColor(Color.colorSelectionArray[indexPath.row]!)
+            break
         }
         
         return cell
@@ -527,20 +613,24 @@ extension NewTrackerViewController: UITextFieldDelegate {
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         newTrackerName = ""
         hideError()
-        deactivateCreateButton()
         return true
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        newTrackerName = textField.text ?? ""
-        hideError()
-        checkCreateButton()
         return true
     }
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
+    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        newTrackerName = textField.text ?? ""
+        checkCreateButton()
+        hideError()
+        return true
+    }
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         deactivateCreateButton()
+        return true
     }
 }
 

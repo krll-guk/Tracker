@@ -1,0 +1,80 @@
+trackers = "Trackers";
+statistics = "Statistics";
+
+pinned = "Pinned";
+pin = "Pin";
+unpin = "Unpin";
+
+filters = "Filters";
+category = "Category";
+schedule = "Schedule";
+
+habit = "Habit";
+event = "Event";
+
+newHabit = "New habit";
+newEvent = "New event";
+newCategory = "New category";
+
+emoji = "Emoji";
+color = "Color";
+
+allTrackers = "All trackers";
+todayTrackers = "Trackers for today";
+completed = "Completed";
+uncompleted = "Uncompleted";
+
+monday = "Monday";
+tuesday = "Tuesday";
+wednesday = "Wednesday";
+thursday = "Thursday";
+friday = "Friday";
+saturday = "Saturday";
+sunday = "Sunday";
+everyDay = "Every day";
+
+mon = "Mon";
+tue = "Tue";
+wed = "Wed";
+thu = "Thu";
+fri = "Fri";
+sat = "Sat";
+sun = "Sun";
+
+ready = "Ready";
+search = "Search";
+cancel = "Cancel";
+create = "Create";
+delete = "Delete";
+edit = "Edit";
+save = "Save";
+
+// Onboarding
+onboardingButtonTitle = "Here is the technology!";
+onboardingLabelBlue = "Track only what you want";
+onboardingLabelRed = "Even if it's not liters of water and yoga";
+
+// TrackersViewController
+trackersVCEmptyLabelText = "What will we track?";
+trackersVCErrorLabelText = "Nothing found";
+trackersVCAlertTitle = "Are you sure you want to delete the tracker?";
+
+// StatisticsViewController
+statisticsVCPlaceholder = "There is nothing to analyze";
+statisticsVCCard = "Trackers completed";
+
+// TrackerCreationViewController
+trackerCreationVCTitle = "Tracker creation";
+
+// NewTrackerViewController
+textFieldPlaceholder = "Enter tracker name";
+errorLabel = "38 character limit";
+editTrackerTitle = "Tracker editing";
+
+// CategoryViewController
+categoryVCButton = "Add category";
+categoryVCPlaceholder = "Habits and events can be\ncombined in meaning";
+
+// NewCategoryViewController
+newCategoryVCTextFieldPlaceholder = "Enter category name";
+newCategoryVCErrorLabel = "Such a category already exists";

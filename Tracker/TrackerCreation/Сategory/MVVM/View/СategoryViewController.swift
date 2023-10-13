@@ -4,9 +4,7 @@ final class CategoryViewController: UIViewController {
     
     var completionHandler: ((String) -> Void)?
     
-    private lazy var viewModel = {
-        CategoryViewModel()
-    }()
+    private let viewModel: CategoryViewModel
     
     private lazy var viewNameLabel: UILabel = {
         let label = UILabel()
@@ -57,6 +55,7 @@ final class CategoryViewController: UIViewController {
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
+        tableView.backgroundColor = .clear
         tableView.layer.cornerRadius = 16
         tableView.separatorColor = Color.gray
         tableView.isScrollEnabled = true
@@ -67,14 +66,20 @@ final class CategoryViewController: UIViewController {
         return tableView
     }()
     
+    init(_ selectedCategory: String) {
+        viewModel = CategoryViewModel()
+        viewModel.selected(categoryName: selectedCategory)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         checkPlaceholderVisibility()
-        
-        if let selectedCategory = UserDefaults.standard.string(forKey: "selectedCategory") {
-            viewModel.selected(categoryName: selectedCategory)
-        }
         
         viewModel.$categories.bind { [weak self] _ in
             guard let self = self else { return }
